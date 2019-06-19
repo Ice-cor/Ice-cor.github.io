@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>前端基础知识整理系列（7）：JSONP | 钟文钦的博客</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="js,">
+  
+
+  <meta name="description" content="浏览器为了安全的目的，制定了同源政策。这是为了保证用户信息安全，防止恶意的网站窃取数据。(阮一峰 浏览器同源政策及其规避方法) 但实际工作中，我们避免不了在不同源的客户端跟服务端进行信息交互。所以前辈们想出了许多办法去规避同源政策，今天我先介绍第一种跨域方法-JSONP。 历史其实在2005年AJAX出现之前，已经有程序员发明出了JSONP，目的就是为了优化用户体验。在JSONP发明之前，还有更多">
+<meta name="keywords" content="js">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端基础知识整理系列（7）：JSONP">
+<meta property="og:url" content="http://yoursite.com/2018/04/28/前端基础知识整理系列（7）：JSONP/index.html">
+<meta property="og:site_name" content="钟文钦的博客">
+<meta property="og:description" content="浏览器为了安全的目的，制定了同源政策。这是为了保证用户信息安全，防止恶意的网站窃取数据。(阮一峰 浏览器同源政策及其规避方法) 但实际工作中，我们避免不了在不同源的客户端跟服务端进行信息交互。所以前辈们想出了许多办法去规避同源政策，今天我先介绍第一种跨域方法-JSONP。 历史其实在2005年AJAX出现之前，已经有程序员发明出了JSONP，目的就是为了优化用户体验。在JSONP发明之前，还有更多">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-06-19T09:15:27.239Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="前端基础知识整理系列（7）：JSONP">
+<meta name="twitter:description" content="浏览器为了安全的目的，制定了同源政策。这是为了保证用户信息安全，防止恶意的网站窃取数据。(阮一峰 浏览器同源政策及其规避方法) 但实际工作中，我们避免不了在不同源的客户端跟服务端进行信息交互。所以前辈们想出了许多办法去规避同源政策，今天我先介绍第一种跨域方法-JSONP。 历史其实在2005年AJAX出现之前，已经有程序员发明出了JSONP，目的就是为了优化用户体验。在JSONP发明之前，还有更多">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbeddx" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-38189205-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?57e94d016e201fba3603a8a2b0263af0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  
+
+</head>
+</html>
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/atom.xml"
+            rel="noopener noreferrer"
+            target="_blank"
+            >
+            RSS
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#历史"><span class="toc-text">历史</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#form表单"><span class="toc-text">form表单</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#img标签发送请求"><span class="toc-text">img标签发送请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#script标签"><span class="toc-text">script标签</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JSONP（JSON-padding）"><span class="toc-text">JSONP（JSON + padding）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#jQuery实现"><span class="toc-text">jQuery实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#感受"><span class="toc-text">感受</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-前端基础知识整理系列（7）：JSONP" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">前端基础知识整理系列（7）：JSONP</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2018.04.28</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>钟文钦</span>
+        </span>
+      
+
+      
+
+
+      
+
+      
+      <i class="fa fa-eye"></i> 
+        <span id="busuanzi_container_page_pv">
+           &nbsp热度 <span id="busuanzi_value_page_pv">
+           <i class="fa fa-spinner fa-spin"></i></span>℃
+        </span>
+      
+      
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>浏览器为了安全的目的，制定了同源政策。这是为了保证用户信息安全，防止恶意的网站窃取数据。(<a href="http://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html" target="_blank" rel="noopener">阮一峰 浏览器同源政策及其规避方法</a>)</p>
+<p>但实际工作中，我们避免不了在不同源的客户端跟服务端进行信息交互。所以前辈们想出了许多办法去规避同源政策，今天我先介绍第一种跨域方法-JSONP。</p>
+<h2 id="历史"><a href="#历史" class="headerlink" title="历史"></a>历史</h2><p>其实在2005年AJAX出现之前，已经有程序员发明出了JSONP，目的就是为了优化用户体验。在JSONP发明之前，还有更多的可代替方案，虽然随着技术迭代已经消声灭迹，但我觉得还是有必要提及下，这能更好的理解新技术发明解决的痛点。</p>
+<h3 id="form表单"><a href="#form表单" class="headerlink" title="form表单"></a>form表单</h3><p>我们知道form表单有action属性，可以触发http请求。最早的时候，前后端数据交互都是基于这个形式。</p>
+<p>前端想向后端请求一个数据，那么写一个form表单，然后提交触发，后端收到请求后返回响应。</p>
+<p>但是form表单在提交的时候会刷新页面，用户体验不好，注重体验的那批程序员想了一种方法，那就是通过html标签元素触发http请求。</p>
+<h3 id="img标签发送请求"><a href="#img标签发送请求" class="headerlink" title="img标签发送请求"></a>img标签发送请求</h3><p>浏览器在碰到有img标签的时候，会自动向服务器发起请求，所以这就是可以利用的。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span>&gt;</span>余额：<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">"balance"</span>&gt;</span>100<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"paymentBtn"</span>&gt;</span>付款<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*javascript代码*/</span></span><br><span class="line">paymentBtn.onclick = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> img = <span class="built_in">document</span>.createElement(<span class="string">'img'</span>)</span><br><span class="line">    img.src = <span class="string">'/pay'</span></span><br><span class="line"></span><br><span class="line">    img.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        alert(<span class="string">'success'</span>)</span><br><span class="line">        balance.innerText = <span class="built_in">parseInt</span>(balance.innerText<span class="number">-1</span>,<span class="number">10</span>) </span><br><span class="line">        <span class="comment">//响应成功则余额减1</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    img.onerror = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        alert(<span class="string">'fail'</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>只要在script标签内创建一个img标签，在此标签加载的时候会发起请求，后端收到请求，返回响应结果。如果状态码返回2xx，那么说明这次请求成功，前端便会执行img.onload的代码。</p>
+<p>虽然达到了通信效果，但这样后端必须传回一个真实的img文件浏览器才会认为响应成功。</p>
+<p>还有其他方式吗？</p>
+<h3 id="script标签"><a href="#script标签" class="headerlink" title="script标签"></a>script标签</h3><p>可以发送请求的标签，除了img，还有a、link、script等等。a标签因为需要点击，所以排除。那剩下的选择也不多了，就想到了用script来代替。</p>
+<p>到了这一步，其实离JSONP已经很接近了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*javascript代码*/</span></span><br><span class="line"><span class="built_in">window</span>.xxx = <span class="function"><span class="keyword">function</span>(<span class="params">data</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(data===<span class="string">'success'</span>)&#123;</span><br><span class="line">        alert(<span class="string">'这是前端代码，数据是'</span>+data)</span><br><span class="line">        balance.innerText = <span class="built_in">parseInt</span>(balance.innerText<span class="number">-1</span>,<span class="number">10</span>) </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">paymentBtn.onclick = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> script = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>)</span><br><span class="line">    script.src = <span class="string">'/pay'</span></span><br><span class="line">    docuent.body.appendChild(script)</span><br><span class="line">    <span class="comment">//script必须在页面中才能发起请求</span></span><br><span class="line">    </span><br><span class="line">    script.onload = <span class="function"><span class="keyword">function</span>(<span class="params">e</span>)</span>&#123;</span><br><span class="line">        alert(<span class="string">'success'</span>)</span><br><span class="line">        e.currentTarget.remove()  <span class="comment">//清除script标签</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    img.onerror = <span class="function"><span class="keyword">function</span>(<span class="params">e</span>)</span>&#123;</span><br><span class="line">        alert(<span class="string">'fail'</span>)</span><br><span class="line">        e.currentTarget.remove()  <span class="comment">//清除script标签</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样的方法跟img很类似，但是通过创建script标签可以做更多的事情。</p>
+<p>先看下后端代码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//node.js</span></span><br><span class="line"><span class="keyword">if</span> (path === <span class="string">'/pay'</span>) &#123;</span><br><span class="line">        <span class="keyword">var</span> balance = fs.readFileSync(<span class="string">'./db'</span>, <span class="string">'utf8'</span>)</span><br><span class="line">        <span class="comment">//db文件只存了数值100，为了模拟数据库的作用</span></span><br><span class="line">        <span class="keyword">var</span> newBalance = balance - <span class="number">1</span></span><br><span class="line">        fs.writeFileSync(<span class="string">'./db'</span>, newBalance)</span><br><span class="line">        </span><br><span class="line">        response.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'application/javascript'</span>)</span><br><span class="line">        response.statusCode = <span class="number">200</span></span><br><span class="line">        response.write(<span class="string">`</span></span><br><span class="line"><span class="string">            xxx.call(undefined,'success')</span></span><br><span class="line"><span class="string">        `</span>)<span class="comment">//向前端传的date是'success'</span></span><br><span class="line">    </span><br><span class="line">        response.end()</span><br><span class="line">    ｝</span><br></pre></td></tr></table></figure>
+
+<p>但这个有点不好的是，前后端会耦合在一起，因为后端程序员必须去知道前端传过来函数的名字xxx，才能相应的返回数据。</p>
+<p>为了解耦，因此约定，统一传过来的函数名为callback，后端通过查询参数获得，这就是JSONP。</p>
+<h2 id="JSONP（JSON-padding）"><a href="#JSONP（JSON-padding）" class="headerlink" title="JSONP（JSON + padding）"></a>JSONP（JSON + padding）</h2><p>因为script标签的请求不受域名限制，所以不同源之间的通信可以利用这一点。</p>
+<p><strong>JSONP定义：通过动态创建script元素，插入到页面中，在加载时向服务器请求数据；服务器收到请求后，通过指定名字的回调函数将数据传回来。</strong></p>
+<p>前端代码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">paymentBtn.addEventListener(<span class="string">'click'</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">var</span> script = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> functionName = <span class="string">'banlance'</span>+ <span class="built_in">parseInt</span>(<span class="built_in">Math</span>.random()*<span class="number">100000</span>,<span class="number">10</span>)</span><br><span class="line">    <span class="comment">//定义随机的回调函数名</span></span><br><span class="line">    </span><br><span class="line">    <span class="built_in">window</span>[functionName] = <span class="function"><span class="keyword">function</span>(<span class="params">result</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(result === <span class="string">'success'</span>)&#123;   </span><br><span class="line">            <span class="comment">// alert('这是前端写的代码')</span></span><br><span class="line">            balance.innerText = <span class="built_in">parseInt</span>(balance.innerText<span class="number">-1</span>,<span class="number">10</span>) </span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            alert(<span class="string">'页面出错'</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    script.src = <span class="string">'http://127.0.0.1:8081/pay?callback='</span>+functionName</span><br><span class="line">    <span class="comment">//本身的域名端口为 http://127.0.0.1:80，因为端口号不同，所以不是统一个源</span></span><br><span class="line">    <span class="built_in">document</span>.body.appendChild(script)</span><br><span class="line"></span><br><span class="line">    script.onload = <span class="function"><span class="keyword">function</span>(<span class="params">e</span>)</span>&#123;</span><br><span class="line"></span><br><span class="line">        e.currentTarget.remove()</span><br><span class="line">        <span class="keyword">delete</span> <span class="built_in">window</span>[functionName]</span><br><span class="line">        <span class="comment">//执行完毕删除回调函数</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    script.onerror = <span class="function"><span class="keyword">function</span>(<span class="params">e</span>)</span>&#123;</span><br><span class="line">        alert(<span class="string">'fail'</span>)</span><br><span class="line">        e.currentTarget.remove()</span><br><span class="line">        <span class="keyword">delete</span> <span class="built_in">window</span>[functionName]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>后端代码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (path === <span class="string">'/pay'</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> balance = fs.readFileSync(<span class="string">'./db'</span>, <span class="string">'utf8'</span>)</span><br><span class="line">    <span class="keyword">var</span> newBalance = balance - <span class="number">1</span></span><br><span class="line">    fs.writeFileSync(<span class="string">'./db'</span>, newBalance)</span><br><span class="line">    response.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'application/javascript'</span>)</span><br><span class="line">    response.statusCode = <span class="number">200</span></span><br><span class="line">    response.write(<span class="string">`</span></span><br><span class="line"><span class="string">        <span class="subst">$&#123;query.callback&#125;</span>.call(undefined,'success')</span></span><br><span class="line"><span class="string">    `</span>)</span><br><span class="line"></span><br><span class="line">    response.end()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样不管我前端写的函数名是什么，后端通过查询callback就能得到，从而达到通信的效果。</p>
+<p><strong>为什么叫做JSONP呢，其实后端返回的格式不一定是JSON格式的字符串，也可以是其他的形式。只是工作中，JSON作为一门数据交换语言已经被广泛应用，一般来说后端返回的是JSON格式的字符串方便前端处理，用的多了，也就叫做JSONP了，严格来说跟JSON没多大关系。</strong></p>
+<h3 id="jQuery实现"><a href="#jQuery实现" class="headerlink" title="jQuery实现"></a>jQuery实现</h3><p>jQuery写法很简单，因为其帮我们封装了一系列的代码，节省了步骤。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$(paymentBtn).on(<span class="string">'click'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    $.ajax(&#123;</span><br><span class="line">        url: <span class="string">"http://127.0.0.1:8081/pay"</span>,</span><br><span class="line">        dataType: <span class="string">"jsonp"</span>,</span><br><span class="line">        success: <span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (result === <span class="string">'success'</span>) &#123;</span><br><span class="line">                <span class="comment">// alert('这是前端写的代码')</span></span><br><span class="line">                balance.innerText = <span class="built_in">parseInt</span>(balance.innerText - <span class="number">1</span>, <span class="number">10</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        error: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            alert(<span class="string">'fail'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>不用写查询参数，也不用在script加载完后删除，jQuery都帮我们做好了~~</p>
+<p><em>ps：JSONP只能用get方法做请求，因为创建script没有提供其他的api，默认就是 get方法</em></p>
+<h2 id="感受"><a href="#感受" class="headerlink" title="感受"></a>感受</h2><p>前端的发展能到今天，真的是离不开各位前辈们苦思冥想的铺垫。如果不是有追求极致的人，那么或许今天的交互还停留在表单提交的状态。</p>
+<p>所以一直抱着敬畏之心去学习，虽然陈旧的技术被淘汰，但我还是愿意去了解它们，因为这些是当时前辈们的思想火花，对前端发展有重要的参考意义。</p>
+
+    
+  </div>
+
+</article>
+
+
+   
+  <div class="text-center donation">
+    <div class="inner-donation">
+      <span class="btn-donation">支持一下</span>
+      <div class="donation-body">
+        <div class="tip text-center">扫一扫，支持forsigner</div>
+        <ul>
+        
+          <li class="item">
+            
+              <span>微信扫一扫</span>
+            
+            <img src="/images/qr-wechat.png" alt="">
+          </li>
+        
+          <li class="item">
+            
+              <span>支付宝扫一扫</span>
+            
+            <img src="/images/qr-alipay.png" alt="">
+          </li>
+        
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+   
+  <div class="box-prev-next clearfix">
+    <a class="show pull-left" href="/2018/04/13/作用域与闭包/">
+        <i class="icon icon-angle-left"></i>
+    </a>
+    <a class="show pull-right" href="/2018/05/03/前端基础知识整理系列（8）：AJAX/">
+        <i class="icon icon-angle-right"></i>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/atom.xml"
+              rel="noopener noreferrer"
+              target="_blank"
+              >
+              RSS
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    
+
+<!-- Gitalk评论插件通用代码 -->
+<div id="gitalk-container"></div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+const gitalk = new Gitalk({
+  clientID: '277317290454635afa73',
+  clientSecret: '78223c859304da5e8d71bfce136d436c6ff95c37',
+  repo: 'blog-comment',
+  owner: 'forsigner',
+  // 在这里设置一下截取前50个字符串, 这是因为 github 对 label 的长度有了要求, 如果超过
+  // 50个字符串则会报错.
+  // id: location.pathname.split('/').pop().substring(0, 49),
+  id: location.pathname,
+  admin: ['forsigner'],
+  // facebook-like distraction free mode
+  distractionFreeMode: false
+})
+gitalk.render('gitalk-container')
+</script>
+<!-- Gitalk代码结束 -->
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
