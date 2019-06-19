@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>JavaScript概述 | 钟文钦的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="什么是 JavaScript 语言？JavaScript 是一种轻量级的脚本语言。所谓“脚本语言”，指的是它不具备开发操作系统的能力，而是只用来编写控制其他大型应用程序的“脚本”。 JavaScript 是一种嵌入式（embedded）语言。它本身提供的核心语法不算很多，只能用来做一些数学和逻辑运算。JavaScript 本身不提供任何与 I/O（输入/输出）相关的 API，都要靠宿主环境（hos">
+<meta name="keywords" content="心得">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript概述">
+<meta property="og:url" content="http://yoursite.com/2018/03/14/js概述/index.html">
+<meta property="og:site_name" content="钟文钦的博客">
+<meta property="og:description" content="什么是 JavaScript 语言？JavaScript 是一种轻量级的脚本语言。所谓“脚本语言”，指的是它不具备开发操作系统的能力，而是只用来编写控制其他大型应用程序的“脚本”。 JavaScript 是一种嵌入式（embedded）语言。它本身提供的核心语法不算很多，只能用来做一些数学和逻辑运算。JavaScript 本身不提供任何与 I/O（输入/输出）相关的 API，都要靠宿主环境（hos">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-06-19T09:15:27.238Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JavaScript概述">
+<meta name="twitter:description" content="什么是 JavaScript 语言？JavaScript 是一种轻量级的脚本语言。所谓“脚本语言”，指的是它不具备开发操作系统的能力，而是只用来编写控制其他大型应用程序的“脚本”。 JavaScript 是一种嵌入式（embedded）语言。它本身提供的核心语法不算很多，只能用来做一些数学和逻辑运算。JavaScript 本身不提供任何与 I/O（输入/输出）相关的 API，都要靠宿主环境（hos">
+  
+    <link rel="alternate" href="/atom.xml" title="钟文钦的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">钟文钦的博客</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-js概述" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/03/14/js概述/" class="article-date">
+  <time datetime="2018-03-14T12:31:21.000Z" itemprop="datePublished">2018-03-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      JavaScript概述
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="什么是-JavaScript-语言？"><a href="#什么是-JavaScript-语言？" class="headerlink" title="什么是 JavaScript 语言？"></a>什么是 JavaScript 语言？</h2><p>JavaScript 是一种轻量级的脚本语言。所谓“脚本语言”，指的是它不具备开发操作系统的能力，而是只用来编写控制其他大型应用程序的“脚本”。</p>
+<p>JavaScript 是一种嵌入式（embedded）语言。它本身提供的核心语法不算很多，只能用来做一些数学和逻辑运算。JavaScript 本身不提供任何与 I/O（输入/输出）相关的 API，都要靠宿主环境（host）提供，所以 JavaScript 只合适嵌入更大型的应用程序环境，去调用宿主环境提供的底层 API。</p>
+<p>目前，已经嵌入 JavaScript 的宿主环境有多种，最常见的环境就是浏览器，另外还有服务器环境，也就是 Node 项目。</p>
+<p>从语法角度看，JavaScript语言是一种“对象模型”语言。各种宿主环境通过这个模型，描述自己的功能和操作接口，从而通过 JavaScript 控制这些功能。但是，JavaScript 并不是纯粹的“面向对象语言”，还支持其他编程范式（比如函数式编程）。这导致几乎任何一个问题，JavaScript 都有多种解决方法。阅读本书的过程中，你会震惊地发现，JavaScript 语法是多么的灵活。</p>
+<p>JavaScript 的核心语法部分相当精简，只包括两个部分：基本的语法构造（比如操作符、控制结构、语句）和标准库（就是一系列具有各种功能的对象比如Array、Date、Math等）。除此之外，各种宿主环境提供额外的 API（即只能在该环境使用的接口），以便 JavaScript 调用。以浏览器为例，它提供的额外 API 可以分成三大类。 – <a href="http://javascript.ruanyifeng.com/introduction/intro.html" target="_blank" rel="noopener">阮一峰《JavaScript 标准参考教程（alpha）》</a></p>
+<h2 id="怎么学习JavaScript"><a href="#怎么学习JavaScript" class="headerlink" title="怎么学习JavaScript"></a>怎么学习JavaScript</h2><p>我觉得JavaScript相对于Java、C、C++这些强类型语言来说，是比较容易理解且容易学习的。<br>首先不用你去配置对应的环境，其次只要有编辑器，或者直接用浏览器，就能看到对应的效果，这对于初学者来说会很块得到成就感，有动力学下去。如果是Java的话，光配置环境可能就需要整个好几天了。。。</p>
+<p>我个人觉得JS学习分两块，一块是了解其语法，其基本语法有赋值、操作、数据类型、语句、函数等等。另一块就是学习各种方法了，方法也不用特别去记忆，用到就去查，熟能生巧，当然去浏览一遍常用的方法让自己有个底也是很好的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">//语法</span><br><span class="line">var //变量赋值</span><br><span class="line">--,++ //一元操作运算符</span><br><span class="line">!,&amp;&amp;,|| //布尔操作符</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">Object,Number,Boolean,String,Undefined,Null//es5六种数据类型，es6新增symbol</span><br><span class="line"></span><br><span class="line">if,for,while... //语句</span><br><span class="line"></span><br><span class="line">function x()&#123;&#125;  //函数</span><br><span class="line"></span><br><span class="line">document.getElementById(&apos;xx&apos;) //dom操作的方法,一般用&quot;.&quot;操作符</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h2 id="困惑"><a href="#困惑" class="headerlink" title="困惑"></a>困惑</h2><p>曾经学了一段时间，基本语法会了，方法也知道一些，但是要自己写出来还是有难度，除非很简单，稍微复杂一点的要么不会写，要么写的很杂乱，不会整理。</p>
+<p>这就涉及到了JS的高级技巧还有对JS基础知识的掌握程度，单单了解基本的JS其实还不足以应付日常工作中的需求，连看其他人的代码都很困难。</p>
+<blockquote>
+<p>所以首先得深入理解JS的原理，包括高级用法、数据结构、算法等等。<br>其次应该多写，看的再多也不是自己的，多写多练才能总结出经验，总的来说就是多写bug。<br>写之于还得多看，多看下大神写的代码，能给自己提供很多灵感，这对优化自己代码很有帮助。</p>
+</blockquote>
+<p>学习JS后续会分享出来，共同进步~</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/03/14/js概述/" data-id="cjx33319f000a1ld2hl8k7j4b" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/心得/">心得</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/03/19/巧遇BUG-深入理解事件委托、冒泡/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          巧遇BUG-理解事件委托、冒泡、捕获
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/03/08/前端基础知识整理系列（2）：css查漏补缺/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">前端基础知识整理系列（2）：css查漏补缺</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTML/">HTML</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JS-AJAX/">JS AJAX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TypeScript/">TypeScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bug/">bug</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo-github/">hexo github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js-cookie/">js cookie</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js-原型-类/">js 原型 类</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/心得/">心得</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/适配/">适配</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/HTML/" style="font-size: 10px;">HTML</a> <a href="/tags/JS-AJAX/" style="font-size: 10px;">JS AJAX</a> <a href="/tags/TypeScript/" style="font-size: 10px;">TypeScript</a> <a href="/tags/bug/" style="font-size: 10px;">bug</a> <a href="/tags/css/" style="font-size: 10px;">css</a> <a href="/tags/hexo-github/" style="font-size: 10px;">hexo github</a> <a href="/tags/js/" style="font-size: 20px;">js</a> <a href="/tags/js-cookie/" style="font-size: 10px;">js cookie</a> <a href="/tags/js-原型-类/" style="font-size: 10px;">js 原型 类</a> <a href="/tags/心得/" style="font-size: 10px;">心得</a> <a href="/tags/适配/" style="font-size: 10px;">适配</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/06/19/123/">123</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/19/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/19/TypeScript渐进(1)-安装及调试工具/">TypeScript渐进(1)-安装及调试工具</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/07/面试分享一/">面试分享一</a>
+          </li>
+        
+          <li>
+            <a href="/2018/05/22/注册登陆基本流程/">注册登陆基本流程</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 钟文钦<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

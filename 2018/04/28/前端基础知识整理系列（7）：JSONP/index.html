@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>前端基础知识整理系列（7）：JSONP | 钟文钦的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="浏览器为了安全的目的，制定了同源政策。这是为了保证用户信息安全，防止恶意的网站窃取数据。(阮一峰 浏览器同源政策及其规避方法) 但实际工作中，我们避免不了在不同源的客户端跟服务端进行信息交互。所以前辈们想出了许多办法去规避同源政策，今天我先介绍第一种跨域方法-JSONP。 历史其实在2005年AJAX出现之前，已经有程序员发明出了JSONP，目的就是为了优化用户体验。在JSONP发明之前，还有更多">
+<meta name="keywords" content="js">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端基础知识整理系列（7）：JSONP">
+<meta property="og:url" content="http://yoursite.com/2018/04/28/前端基础知识整理系列（7）：JSONP/index.html">
+<meta property="og:site_name" content="钟文钦的博客">
+<meta property="og:description" content="浏览器为了安全的目的，制定了同源政策。这是为了保证用户信息安全，防止恶意的网站窃取数据。(阮一峰 浏览器同源政策及其规避方法) 但实际工作中，我们避免不了在不同源的客户端跟服务端进行信息交互。所以前辈们想出了许多办法去规避同源政策，今天我先介绍第一种跨域方法-JSONP。 历史其实在2005年AJAX出现之前，已经有程序员发明出了JSONP，目的就是为了优化用户体验。在JSONP发明之前，还有更多">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-06-19T09:15:27.239Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="前端基础知识整理系列（7）：JSONP">
+<meta name="twitter:description" content="浏览器为了安全的目的，制定了同源政策。这是为了保证用户信息安全，防止恶意的网站窃取数据。(阮一峰 浏览器同源政策及其规避方法) 但实际工作中，我们避免不了在不同源的客户端跟服务端进行信息交互。所以前辈们想出了许多办法去规避同源政策，今天我先介绍第一种跨域方法-JSONP。 历史其实在2005年AJAX出现之前，已经有程序员发明出了JSONP，目的就是为了优化用户体验。在JSONP发明之前，还有更多">
+  
+    <link rel="alternate" href="/atom.xml" title="钟文钦的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">钟文钦的博客</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-前端基础知识整理系列（7）：JSONP" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/04/28/前端基础知识整理系列（7）：JSONP/" class="article-date">
+  <time datetime="2018-04-28T15:07:13.000Z" itemprop="datePublished">2018-04-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      前端基础知识整理系列（7）：JSONP
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>浏览器为了安全的目的，制定了同源政策。这是为了保证用户信息安全，防止恶意的网站窃取数据。(<a href="http://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html" target="_blank" rel="noopener">阮一峰 浏览器同源政策及其规避方法</a>)</p>
+<p>但实际工作中，我们避免不了在不同源的客户端跟服务端进行信息交互。所以前辈们想出了许多办法去规避同源政策，今天我先介绍第一种跨域方法-JSONP。</p>
+<h2 id="历史"><a href="#历史" class="headerlink" title="历史"></a>历史</h2><p>其实在2005年AJAX出现之前，已经有程序员发明出了JSONP，目的就是为了优化用户体验。在JSONP发明之前，还有更多的可代替方案，虽然随着技术迭代已经消声灭迹，但我觉得还是有必要提及下，这能更好的理解新技术发明解决的痛点。</p>
+<h3 id="form表单"><a href="#form表单" class="headerlink" title="form表单"></a>form表单</h3><p>我们知道form表单有action属性，可以触发http请求。最早的时候，前后端数据交互都是基于这个形式。</p>
+<p>前端想向后端请求一个数据，那么写一个form表单，然后提交触发，后端收到请求后返回响应。</p>
+<p>但是form表单在提交的时候会刷新页面，用户体验不好，注重体验的那批程序员想了一种方法，那就是通过html标签元素触发http请求。</p>
+<h3 id="img标签发送请求"><a href="#img标签发送请求" class="headerlink" title="img标签发送请求"></a>img标签发送请求</h3><p>浏览器在碰到有img标签的时候，会自动向服务器发起请求，所以这就是可以利用的。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span>&gt;</span>余额：<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">id</span>=<span class="string">"balance"</span>&gt;</span>100<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"paymentBtn"</span>&gt;</span>付款<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*javascript代码*/</span></span><br><span class="line">paymentBtn.onclick = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> img = <span class="built_in">document</span>.createElement(<span class="string">'img'</span>)</span><br><span class="line">    img.src = <span class="string">'/pay'</span></span><br><span class="line"></span><br><span class="line">    img.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        alert(<span class="string">'success'</span>)</span><br><span class="line">        balance.innerText = <span class="built_in">parseInt</span>(balance.innerText<span class="number">-1</span>,<span class="number">10</span>) </span><br><span class="line">        <span class="comment">//响应成功则余额减1</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    img.onerror = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        alert(<span class="string">'fail'</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>只要在script标签内创建一个img标签，在此标签加载的时候会发起请求，后端收到请求，返回响应结果。如果状态码返回2xx，那么说明这次请求成功，前端便会执行img.onload的代码。</p>
+<p>虽然达到了通信效果，但这样后端必须传回一个真实的img文件浏览器才会认为响应成功。</p>
+<p>还有其他方式吗？</p>
+<h3 id="script标签"><a href="#script标签" class="headerlink" title="script标签"></a>script标签</h3><p>可以发送请求的标签，除了img，还有a、link、script等等。a标签因为需要点击，所以排除。那剩下的选择也不多了，就想到了用script来代替。</p>
+<p>到了这一步，其实离JSONP已经很接近了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*javascript代码*/</span></span><br><span class="line"><span class="built_in">window</span>.xxx = <span class="function"><span class="keyword">function</span>(<span class="params">data</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(data===<span class="string">'success'</span>)&#123;</span><br><span class="line">        alert(<span class="string">'这是前端代码，数据是'</span>+data)</span><br><span class="line">        balance.innerText = <span class="built_in">parseInt</span>(balance.innerText<span class="number">-1</span>,<span class="number">10</span>) </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">paymentBtn.onclick = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> script = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>)</span><br><span class="line">    script.src = <span class="string">'/pay'</span></span><br><span class="line">    docuent.body.appendChild(script)</span><br><span class="line">    <span class="comment">//script必须在页面中才能发起请求</span></span><br><span class="line">    </span><br><span class="line">    script.onload = <span class="function"><span class="keyword">function</span>(<span class="params">e</span>)</span>&#123;</span><br><span class="line">        alert(<span class="string">'success'</span>)</span><br><span class="line">        e.currentTarget.remove()  <span class="comment">//清除script标签</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    img.onerror = <span class="function"><span class="keyword">function</span>(<span class="params">e</span>)</span>&#123;</span><br><span class="line">        alert(<span class="string">'fail'</span>)</span><br><span class="line">        e.currentTarget.remove()  <span class="comment">//清除script标签</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样的方法跟img很类似，但是通过创建script标签可以做更多的事情。</p>
+<p>先看下后端代码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//node.js</span></span><br><span class="line"><span class="keyword">if</span> (path === <span class="string">'/pay'</span>) &#123;</span><br><span class="line">        <span class="keyword">var</span> balance = fs.readFileSync(<span class="string">'./db'</span>, <span class="string">'utf8'</span>)</span><br><span class="line">        <span class="comment">//db文件只存了数值100，为了模拟数据库的作用</span></span><br><span class="line">        <span class="keyword">var</span> newBalance = balance - <span class="number">1</span></span><br><span class="line">        fs.writeFileSync(<span class="string">'./db'</span>, newBalance)</span><br><span class="line">        </span><br><span class="line">        response.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'application/javascript'</span>)</span><br><span class="line">        response.statusCode = <span class="number">200</span></span><br><span class="line">        response.write(<span class="string">`</span></span><br><span class="line"><span class="string">            xxx.call(undefined,'success')</span></span><br><span class="line"><span class="string">        `</span>)<span class="comment">//向前端传的date是'success'</span></span><br><span class="line">    </span><br><span class="line">        response.end()</span><br><span class="line">    ｝</span><br></pre></td></tr></table></figure>
+
+<p>但这个有点不好的是，前后端会耦合在一起，因为后端程序员必须去知道前端传过来函数的名字xxx，才能相应的返回数据。</p>
+<p>为了解耦，因此约定，统一传过来的函数名为callback，后端通过查询参数获得，这就是JSONP。</p>
+<h2 id="JSONP（JSON-padding）"><a href="#JSONP（JSON-padding）" class="headerlink" title="JSONP（JSON + padding）"></a>JSONP（JSON + padding）</h2><p>因为script标签的请求不受域名限制，所以不同源之间的通信可以利用这一点。</p>
+<p><strong>JSONP定义：通过动态创建script元素，插入到页面中，在加载时向服务器请求数据；服务器收到请求后，通过指定名字的回调函数将数据传回来。</strong></p>
+<p>前端代码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">paymentBtn.addEventListener(<span class="string">'click'</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">var</span> script = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> functionName = <span class="string">'banlance'</span>+ <span class="built_in">parseInt</span>(<span class="built_in">Math</span>.random()*<span class="number">100000</span>,<span class="number">10</span>)</span><br><span class="line">    <span class="comment">//定义随机的回调函数名</span></span><br><span class="line">    </span><br><span class="line">    <span class="built_in">window</span>[functionName] = <span class="function"><span class="keyword">function</span>(<span class="params">result</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(result === <span class="string">'success'</span>)&#123;   </span><br><span class="line">            <span class="comment">// alert('这是前端写的代码')</span></span><br><span class="line">            balance.innerText = <span class="built_in">parseInt</span>(balance.innerText<span class="number">-1</span>,<span class="number">10</span>) </span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            alert(<span class="string">'页面出错'</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    script.src = <span class="string">'http://127.0.0.1:8081/pay?callback='</span>+functionName</span><br><span class="line">    <span class="comment">//本身的域名端口为 http://127.0.0.1:80，因为端口号不同，所以不是统一个源</span></span><br><span class="line">    <span class="built_in">document</span>.body.appendChild(script)</span><br><span class="line"></span><br><span class="line">    script.onload = <span class="function"><span class="keyword">function</span>(<span class="params">e</span>)</span>&#123;</span><br><span class="line"></span><br><span class="line">        e.currentTarget.remove()</span><br><span class="line">        <span class="keyword">delete</span> <span class="built_in">window</span>[functionName]</span><br><span class="line">        <span class="comment">//执行完毕删除回调函数</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    script.onerror = <span class="function"><span class="keyword">function</span>(<span class="params">e</span>)</span>&#123;</span><br><span class="line">        alert(<span class="string">'fail'</span>)</span><br><span class="line">        e.currentTarget.remove()</span><br><span class="line">        <span class="keyword">delete</span> <span class="built_in">window</span>[functionName]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>后端代码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (path === <span class="string">'/pay'</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> balance = fs.readFileSync(<span class="string">'./db'</span>, <span class="string">'utf8'</span>)</span><br><span class="line">    <span class="keyword">var</span> newBalance = balance - <span class="number">1</span></span><br><span class="line">    fs.writeFileSync(<span class="string">'./db'</span>, newBalance)</span><br><span class="line">    response.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'application/javascript'</span>)</span><br><span class="line">    response.statusCode = <span class="number">200</span></span><br><span class="line">    response.write(<span class="string">`</span></span><br><span class="line"><span class="string">        <span class="subst">$&#123;query.callback&#125;</span>.call(undefined,'success')</span></span><br><span class="line"><span class="string">    `</span>)</span><br><span class="line"></span><br><span class="line">    response.end()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样不管我前端写的函数名是什么，后端通过查询callback就能得到，从而达到通信的效果。</p>
+<p><strong>为什么叫做JSONP呢，其实后端返回的格式不一定是JSON格式的字符串，也可以是其他的形式。只是工作中，JSON作为一门数据交换语言已经被广泛应用，一般来说后端返回的是JSON格式的字符串方便前端处理，用的多了，也就叫做JSONP了，严格来说跟JSON没多大关系。</strong></p>
+<h3 id="jQuery实现"><a href="#jQuery实现" class="headerlink" title="jQuery实现"></a>jQuery实现</h3><p>jQuery写法很简单，因为其帮我们封装了一系列的代码，节省了步骤。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$(paymentBtn).on(<span class="string">'click'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    $.ajax(&#123;</span><br><span class="line">        url: <span class="string">"http://127.0.0.1:8081/pay"</span>,</span><br><span class="line">        dataType: <span class="string">"jsonp"</span>,</span><br><span class="line">        success: <span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (result === <span class="string">'success'</span>) &#123;</span><br><span class="line">                <span class="comment">// alert('这是前端写的代码')</span></span><br><span class="line">                balance.innerText = <span class="built_in">parseInt</span>(balance.innerText - <span class="number">1</span>, <span class="number">10</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        error: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            alert(<span class="string">'fail'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>不用写查询参数，也不用在script加载完后删除，jQuery都帮我们做好了~~</p>
+<p><em>ps：JSONP只能用get方法做请求，因为创建script没有提供其他的api，默认就是 get方法</em></p>
+<h2 id="感受"><a href="#感受" class="headerlink" title="感受"></a>感受</h2><p>前端的发展能到今天，真的是离不开各位前辈们苦思冥想的铺垫。如果不是有追求极致的人，那么或许今天的交互还停留在表单提交的状态。</p>
+<p>所以一直抱着敬畏之心去学习，虽然陈旧的技术被淘汰，但我还是愿意去了解它们，因为这些是当时前辈们的思想火花，对前端发展有重要的参考意义。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/04/28/前端基础知识整理系列（7）：JSONP/" data-id="cjx33319l000i1ld2p39uyfnz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/js/">js</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/05/03/前端基础知识整理系列（8）：AJAX/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          前端基础知识整理系列（8）：AJAX
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/04/13/作用域与闭包/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">前端基础知识整理系列（6）: 作用域及闭包</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTML/">HTML</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JS-AJAX/">JS AJAX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TypeScript/">TypeScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bug/">bug</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo-github/">hexo github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js-cookie/">js cookie</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js-原型-类/">js 原型 类</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/心得/">心得</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/适配/">适配</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/HTML/" style="font-size: 10px;">HTML</a> <a href="/tags/JS-AJAX/" style="font-size: 10px;">JS AJAX</a> <a href="/tags/TypeScript/" style="font-size: 10px;">TypeScript</a> <a href="/tags/bug/" style="font-size: 10px;">bug</a> <a href="/tags/css/" style="font-size: 10px;">css</a> <a href="/tags/hexo-github/" style="font-size: 10px;">hexo github</a> <a href="/tags/js/" style="font-size: 20px;">js</a> <a href="/tags/js-cookie/" style="font-size: 10px;">js cookie</a> <a href="/tags/js-原型-类/" style="font-size: 10px;">js 原型 类</a> <a href="/tags/心得/" style="font-size: 10px;">心得</a> <a href="/tags/适配/" style="font-size: 10px;">适配</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/06/19/123/">123</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/19/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/19/TypeScript渐进(1)-安装及调试工具/">TypeScript渐进(1)-安装及调试工具</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/07/面试分享一/">面试分享一</a>
+          </li>
+        
+          <li>
+            <a href="/2018/05/22/注册登陆基本流程/">注册登陆基本流程</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 钟文钦<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>前端基础知识整理系列（1）：HTML概述 | 钟文钦的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="对前端有过了解的都知道，前端知识无非分为html、css、javascript三块。 很多人认为，html是最简单的一块，甚至不将其纳为一门语言，工作中用到了就去查查文档，不用大费周章的去详细了解。事实上也确实是如此，即使HTML5出来了，内容也就增加了一些新标签，定义了些新规则，对日常工作使用没有太大的影响。 然而这次回过头来梳理知识，虽然html很简单，但是就是这么一门简单的标记语言，承载了世">
+<meta name="keywords" content="HTML">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端基础知识整理系列（1）：HTML概述">
+<meta property="og:url" content="http://yoursite.com/2018/03/04/前端基础知识整理系列1-html概述/index.html">
+<meta property="og:site_name" content="钟文钦的博客">
+<meta property="og:description" content="对前端有过了解的都知道，前端知识无非分为html、css、javascript三块。 很多人认为，html是最简单的一块，甚至不将其纳为一门语言，工作中用到了就去查查文档，不用大费周章的去详细了解。事实上也确实是如此，即使HTML5出来了，内容也就增加了一些新标签，定义了些新规则，对日常工作使用没有太大的影响。 然而这次回过头来梳理知识，虽然html很简单，但是就是这么一门简单的标记语言，承载了世">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-06-19T09:15:27.238Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="前端基础知识整理系列（1）：HTML概述">
+<meta name="twitter:description" content="对前端有过了解的都知道，前端知识无非分为html、css、javascript三块。 很多人认为，html是最简单的一块，甚至不将其纳为一门语言，工作中用到了就去查查文档，不用大费周章的去详细了解。事实上也确实是如此，即使HTML5出来了，内容也就增加了一些新标签，定义了些新规则，对日常工作使用没有太大的影响。 然而这次回过头来梳理知识，虽然html很简单，但是就是这么一门简单的标记语言，承载了世">
+  
+    <link rel="alternate" href="/atom.xml" title="钟文钦的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">钟文钦的博客</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-前端基础知识整理系列1-html概述" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/03/04/前端基础知识整理系列1-html概述/" class="article-date">
+  <time datetime="2018-03-04T11:46:19.000Z" itemprop="datePublished">2018-03-04</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      前端基础知识整理系列（1）：HTML概述
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>对前端有过了解的都知道，前端知识无非分为html、css、javascript三块。</p>
+<p>很多人认为，html是最简单的一块，甚至不将其纳为一门语言，工作中用到了就去查查文档，不用大费周章的去详细了解。事实上也确实是如此，即使HTML5出来了，内容也就增加了一些新标签，定义了些新规则，对日常工作使用没有太大的影响。</p>
+<p>然而这次回过头来梳理知识，虽然html很简单，但是就是这么一门简单的标记语言，承载了世界上成千上万的网页，把人类的生活变得更丰富多彩，所以抱着敬畏的心态去深入学习前人所留下的硕果，而不是轻蔑的浅尝即止，这能对我们的程序生涯打下坚实的基础，也是端正自己学习态度的一个开始。</p>
+<p>下面做一个html的总体概述。</p>
+<h2 id="W3C-简介"><a href="#W3C-简介" class="headerlink" title="W3C 简介"></a>W3C 简介</h2><p>先了解下HTML制定组织的简要信息：</p>
+<p>万维网联盟（W3C）由蒂姆·伯纳斯-李于1994年10月离开欧洲核子研究中心（CERN）后成立，在欧盟执委会和国防高等研究计划署（DARPA）的支持下成立于麻省理工学院MIT计算机科学与人工智能实验室（MIT／LCS）[2]，DARPA曾率先推出了互联网及其前身ARPANET。</p>
+<p>该组织试图通过W3C制定的新标准来促进业界成员间的兼容性和协议。不兼容的HTML版本由不同的供应商提供，导致网页显示方式不一致。联盟试图让所有的供应商实施一套由联盟选择的核心原则和组件。</p>
+<p>CERN最初打算做为W3C的欧洲分支机构；然而，CERN希望把重点放在粒子物理上，而不是信息技术上。1995年4月，法国国家信息与自动化研究所（INRIA）成为W3C的欧洲机构，1996年9月，庆应义塾大学SFC研究所成为亚洲机构[3]。从1997年开始，W3C在世界各地创建了区域办事处。截至2009年9月，已有十八个世界办事处涵盖澳大利亚、比荷卢三国（荷兰，卢森堡和比利时）、巴西、中国、芬兰、德国、奥地利、希腊、香港、匈牙利、印度、以色列、意大利、韩国、摩洛哥、南非、西班牙、瑞典，以及2016年的英国和爱尔兰[4]。2013年1月，北京航空航天大学成为中国机构。–<a href="https://zh.wikipedia.org/wiki/%E4%B8%87%E7%BB%B4%E7%BD%91%E8%81%94%E7%9B%9F" target="_blank" rel="noopener">维基百科</a></p>
+<h2 id="HTML-简介"><a href="#HTML-简介" class="headerlink" title="HTML 简介"></a>HTML 简介</h2><p>超文本标记语言（英语：HyperText Markup Language，简称：HTML）是一种用于创建网页的标准标记语言。HTML是一种基础技术，常与CSS、JavaScript一起被众多网站用于设计令人赏心悦目的网页、网页应用程序以及移动应用程序的用户界面。网页浏览器可以读取HTML文件，并将其渲染成可视化网页。HTML描述了一个网站的结构语义随着线索的呈现，使之成为一种标记语言而非编程语言。</p>
+<p>HTML元素是构建网站的基石。HTML允许嵌入图像与对象，并且可以用于创建交互式表单，它被用来结构化信息——例如标题、段落和列表等等，也可用来在一定程度上描述文档的外观和语义。HTML的语言形式为尖括号包围的HTML元素（如&lt;html&gt;），浏览器使用HTML标签和脚本来诠释网页内容，但不会将它们显示在页面上。</p>
+<p>HTML可以嵌入如JavaScript的脚本语言，它们会影响HTML网页的行为。网页浏览器也可以引用层叠样式表（CSS）来定义文本和其它元素的外观与布局。维护HTML和CSS标准的组织万维网联盟（W3C）鼓励人们使用CSS替代一些用于表现的HTML元素。–<a href="https://zh.wikipedia.org/wiki/HTML" target="_blank" rel="noopener">维基百科</a></p>
+<h3 id="HTML-常用标签解析"><a href="#HTML-常用标签解析" class="headerlink" title="HTML 常用标签解析"></a>HTML 常用标签解析</h3><p><strong>&lt;div&gt;</strong><br><em>是一个通用型的流内容容器，它在语义上不代表任何特定类型的内容，它可以被用来对其它元素进行分组，一般用于样式化相关的需求（使用 class 或 id 特性) 或者对具有相同特性的一组元素进行分组 (比如 lang)，它应该在没有任何其它语义元素可用时才使用。</em></p>
+<p><strong>&lt;span&gt;</strong><br><em>俗称万能标签，元素是短语内容的通用行内容器，并没有任何特殊语义。可以使用它来编组元素以达到某种样式意图（通过使用类或者Id属性），或者这些元素有着共同的属性，比如lang。应该在没有其他合适的语义元素时才使用它。</em></p>
+<p><strong>&lt;p&gt;</strong><br><em>表示文本的一个段落。该元素通常表现为一整块与相邻文本分离的文本，或以垂直的空白隔离或以首行缩进。</em></p>
+<p><strong>&lt;h1&gt;~&lt;h6&gt;</strong><br><em>标题(Heading)元素拥有六个不同的级别，&lt;h1&gt; 是最高级的，而 &lt;h6&gt; 则是最低的级别。 一个标题元素能简要描述该节的主题。</em></p>
+<p><strong>&lt;img&gt;</strong><br><em>HTML Image 元素（ &lt;img&gt;）代表文档中的一个图像。</em></p>
+<p><strong>&lt;ul&gt;</strong><br><em>代表多项的无序列表，即无数值排序项的集合，且它们在列表中的顺序是没有意义的。</em></p>
+<p><strong>&lt;ol&gt;</strong><br><em>表示多个有序列表项，通常渲染为有带编号的列表。</em></p>
+<p><strong>&lt;li&gt;</strong><br><em>用于表示列表里的条目。</em></p>
+<p><strong>&lt;a&gt;</strong><br><em>可以创建一个到其他网页、文件、同一页面内的位置、电子邮件地址或任何其他URL的超链接。</em></p>
+<p><strong>&lt;button&gt;</strong><br><em>表示一个可点击的按钮。能够在表单，或者 HTML 文档的任一需要按钮的位置。</em></p>
+<p><strong>&lt;input&gt;</strong><br><em>用于为基于Web的表单创建交互式控件，以便接受来自用户的数据。</em></p>
+<h3 id="HTML5-新增标签解析"><a href="#HTML5-新增标签解析" class="headerlink" title="HTML5 新增标签解析"></a>HTML5 新增标签解析</h3><p><strong>&lt;aside&gt;</strong><br><em>表示一个和其余页面内容几乎无关的部分，被认为是独立于该内容的一部分并且可以被单独的拆分出来而不会使整体受影响。</em></p>
+<p><strong>&lt;header&gt;</strong><br><em>表示一组引导性的帮助，可能包含标题元素，也可以包含其他元素，像logo、分节头部、搜索表单等。</em></p>
+<p><strong>&lt;footer&gt;</strong><br><em>表示最近一个章节内容或者根节点（sectioning root ）元素的页脚。一个页脚通常包含该章节作者、版权数据或者与文档相关的链接等信息。</em></p>
+<p><strong>&lt;nav&gt;</strong><br><em>描绘一个含有多个超链接的区域，这个区域包含转到其他页面，或者页面内部其他部分的链接列表。</em></p>
+<p><strong>&lt;section&gt;</strong><br><em>表示文档中的一个区域（或节），比如，内容中的一个专题组，一般来说会有包含一个标题（heading）。</em></p>
+<p><strong>&lt;main&gt;</strong><br><em>元素呈现了文档或应用的主体部分。主体部分由与文档直接相关，或者扩展于文档的中心主题、应用的主要功能部分的内容组成。这部分内容在文档中应当是独一无二的，不包含任何在一系列文档中重复的内容，比如侧边栏，导航栏链接，版权信息，网站logo，搜索框（除非搜索框作为文档的主要功能）。</em></p>
+<p><strong>&lt;audio&gt;</strong><br><em>元素用于在文档中表示音频内容。</em></p>
+<p><strong>&lt;video&gt;</strong><br><em>元元素 用于在HTML或者XHTML文档中嵌入视频内容。</em></p>
+<p><strong>&lt;canvas&gt;</strong><br><em>元素可被用来通过脚本（通常是JavaScript）绘制图形。比如,它可以被用来绘制图形,制作图片集合,甚至用来实现动画效果。</em></p>
+<p><strong>ps:现在很多标榜着语义化标签，其实工作中很多人做不到，div+span就走天下，虽然效果能实现，但实际上跟语义化背道而驰。HTML 5出了些新标签，就是为了更好的语义化。同时class命名得规范，语义化也能友好seo。</strong></p>
+<h2 id="工作中遇到的难点及技巧"><a href="#工作中遇到的难点及技巧" class="headerlink" title="工作中遇到的难点及技巧"></a>工作中遇到的难点及技巧</h2><p>1、使用iframe标签，可以在网页内嵌套另外一个网页。</p>
+<p>2、利用a、iframe可以在当前页面打开另一个网页。<br>    代码：<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;iframe name=xxx src=&quot;#&quot; frameborder=&quot;0&quot;&gt;</span><br><span class="line">&lt;a target=xxx href=&quot;http://qq.com&quot;&gt;qq&lt;/a&gt;  //注意iframe的name需要与a标签的target一致</span><br></pre></td></tr></table></figure></p>
+<p>3、a标签的target属性<br>    代码：<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href=&quot;http://qq.com&quot; target=&quot;_blank/_self/_parent/_top&quot;&gt;&lt;/a&gt;</span><br><span class="line">    //_blank在新页面打开，而不是覆盖当前页面</span><br><span class="line">    //_self当前页面打开，会覆盖</span><br><span class="line">    //_parent父亲页面打开</span><br><span class="line">    //_top最上级的祖先页面打开</span><br></pre></td></tr></table></figure></p>
+<p>4、a标签下载一个页面<br>    代码：<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;a download href=&quot;http://qq.com&quot;&gt;下载&lt;/a&gt; //download属性</span><br></pre></td></tr></table></figure></p>
+<p>5、form表单中内有button标签，如果不指定button类型，则button会默认为type=submit，会刷新页面<br>    代码：<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;form&gt;</span><br><span class="line">    &lt;button&gt;按钮&lt;/button&gt;    //工作中曾经遇到过，点击按钮就刷新页面，找了大半天。。。</span><br><span class="line">&lt;/form&gt;</span><br></pre></td></tr></table></figure></p>
+<p>6、input标签涉及数据的必须有name，不然无法请求响应数据<br>    代码：<br>    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;form&gt;</span><br><span class="line">    &lt;input type=&quot;checkbox&quot; name=&quot;fruits&quot; value=&quot;apple&quot;&gt;</span><br><span class="line">    &lt;input type=&quot;checkbox&quot; name=&quot;fruits&quot; value=&quot;banana&quot;&gt;</span><br><span class="line">    &lt;input type=&quot;submit&quot;&gt;</span><br><span class="line">&lt;/form&gt;</span><br></pre></td></tr></table></figure></p>
+<p>##待续</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/03/04/前端基础知识整理系列1-html概述/" data-id="cjx33319c00061ld2i1eoiapv" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/HTML/">HTML</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/03/08/前端基础知识整理系列（2）：css查漏补缺/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          前端基础知识整理系列（2）：css查漏补缺
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/03/02/Hexo-github搭建个人博客/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hexo+github+git搭建个人博客</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTML/">HTML</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JS-AJAX/">JS AJAX</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/TypeScript/">TypeScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bug/">bug</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo-github/">hexo github</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js-cookie/">js cookie</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/js-原型-类/">js 原型 类</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/心得/">心得</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/适配/">适配</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/HTML/" style="font-size: 10px;">HTML</a> <a href="/tags/JS-AJAX/" style="font-size: 10px;">JS AJAX</a> <a href="/tags/TypeScript/" style="font-size: 10px;">TypeScript</a> <a href="/tags/bug/" style="font-size: 10px;">bug</a> <a href="/tags/css/" style="font-size: 10px;">css</a> <a href="/tags/hexo-github/" style="font-size: 10px;">hexo github</a> <a href="/tags/js/" style="font-size: 20px;">js</a> <a href="/tags/js-cookie/" style="font-size: 10px;">js cookie</a> <a href="/tags/js-原型-类/" style="font-size: 10px;">js 原型 类</a> <a href="/tags/心得/" style="font-size: 10px;">心得</a> <a href="/tags/适配/" style="font-size: 10px;">适配</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">March 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/06/19/123/">123</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/19/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/19/TypeScript渐进(1)-安装及调试工具/">TypeScript渐进(1)-安装及调试工具</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/07/面试分享一/">面试分享一</a>
+          </li>
+        
+          <li>
+            <a href="/2018/05/22/注册登陆基本流程/">注册登陆基本流程</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 钟文钦<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
