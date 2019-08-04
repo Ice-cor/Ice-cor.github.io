@@ -24,7 +24,7 @@
 <meta property="og:description" content="几大强类型语言例如Java、C++等都以面向对象的思想去写代码。JavaScript虽然也有借鉴，但其一大特色就是有原型这个东西。 原型JS中的原型平时你感觉好像没怎么接触，其实在写的过程中无时无刻不用得到它。 举个简单的例子 123var array = [1,2,3]array.push(4)console.log(array) //[1,2,3,4]  有没想过push这个方法到底是怎么存在">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://wx2.sinaimg.cn/large/90cb06dbly1frbq1330xzj20880573yq.jpg">
-<meta property="og:updated_time" content="2019-06-19T09:15:27.239Z">
+<meta property="og:updated_time" content="2019-08-04T19:00:19.465Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="前端基础知识整理系列（9）：原型和类">
 <meta name="twitter:description" content="几大强类型语言例如Java、C++等都以面向对象的思想去写代码。JavaScript虽然也有借鉴，但其一大特色就是有原型这个东西。 原型JS中的原型平时你感觉好像没怎么接触，其实在写的过程中无时无刻不用得到它。 举个简单的例子 123var array = [1,2,3]array.push(4)console.log(array) //[1,2,3,4]  有没想过push这个方法到底是怎么存在">
@@ -256,8 +256,12 @@ ga('send', 'pageview');
 <p>打印出array，打开开发者工具，查看<strong>proto</strong>，这里面可以看见一系列的方法，其中push也是包括在内的。</p>
 <p>所以，即使没有定义过push方法，我们仍然可以使用，因为这个方法已被在数组的原型上定义好了;<strong>如果在当前环境内，没有找到push方法，则会沿着原型链继续查找。</strong></p>
 <p>使用原型的好处是省内存，因为对象的操作方法都是这么几种，如果每个对象都的方法重新定义一次，这样会占用很高的内存。所以开发者把常用的方法定义到原型上，每个对象在使用这些方法时只要找到同一个原型那就能使用了。相对于定义多次相同的方法，只定义一个原型那肯定简便的多。</p>
-<h2 id="定义一个原型"><a href="#定义一个原型" class="headerlink" title="定义一个原型"></a>定义一个原型</h2><p>定义一个原型很简单，只要用prototype属性就行</p>
+<h2 id="定义一个原型"><a href="#定义一个原型" class="headerlink" title="定义一个原型"></a>定义一个原型</h2><p><del>定义一个原型很简单，只要用prototype属性就行</del></p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = &#123;&#125;</span><br><span class="line">obj.prototype = &#123;</span><br><span class="line">    a: <span class="number">2</span>,</span><br><span class="line">    b: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;<span class="built_in">console</span>.log(<span class="number">3</span>)&#125;,</span><br><span class="line">    c: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;...&#125;</span><br><span class="line">&#125;</span><br><span class="line">obj.a <span class="comment">//2</span></span><br><span class="line">obj.b() <span class="comment">//3</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>一年后看到这里，发现当时理解是有错的。</strong></p>
+<p>补充：<br>prototype是函数独有的，用来指向对象的原型，普通对象可以通过<strong>proto</strong>来设置原型。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = &#123;<span class="attr">name</span>: <span class="string">'obj'</span>&#125;</span><br><span class="line">obj.__proto__ = &#123;</span><br><span class="line">    a: <span class="number">2</span>,</span><br><span class="line">    b: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;<span class="built_in">console</span>.log(<span class="number">3</span>)&#125;,</span><br><span class="line">    c: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;...&#125;</span><br><span class="line">&#125;</span><br><span class="line">obj.a <span class="comment">//2</span></span><br><span class="line">obj.b() <span class="comment">//3</span></span><br><span class="line">obj.hasOwnProperty(<span class="string">'name'</span>) <span class="comment">//true 这个方法是Object对象的原型方法</span></span><br></pre></td></tr></table></figure>
 
 <p>可以看出，定义了对象的原型之后，就能使用原型上的属性跟方法。</p>
 <h2 id="类"><a href="#类" class="headerlink" title="类"></a>类</h2><p>如果我们理解了原型，那么对类理解起来会相对简单很多。</p>
