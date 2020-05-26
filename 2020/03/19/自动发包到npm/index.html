@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>自动发包到npm | 钟文钦的博客</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="部署 npm,">
+  
+
+  <meta name="description" content="自动化测试使用的是circle ci，本例全都是以circle配置为准。  yml文件配置测试的配置不多赘述，主要贴出自动publish的配置； 12345678910111213141516171819202122232425262728293031# .circleci/config.yml文件defaults: &amp;amp;defaults  docker:    - image: circl">
+<meta name="keywords" content="部署 npm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自动发包到npm">
+<meta property="og:url" content="http://yoursite.com/2020/03/19/自动发包到npm/index.html">
+<meta property="og:site_name" content="钟文钦的博客">
+<meta property="og:description" content="自动化测试使用的是circle ci，本例全都是以circle配置为准。  yml文件配置测试的配置不多赘述，主要贴出自动publish的配置； 12345678910111213141516171819202122232425262728293031# .circleci/config.yml文件defaults: &amp;amp;defaults  docker:    - image: circl">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-05-26T00:15:25.768Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="自动发包到npm">
+<meta name="twitter:description" content="自动化测试使用的是circle ci，本例全都是以circle配置为准。  yml文件配置测试的配置不多赘述，主要贴出自动publish的配置； 12345678910111213141516171819202122232425262728293031# .circleci/config.yml文件defaults: &amp;amp;defaults  docker:    - image: circl">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbeddx" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-38189205-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?8dd284c51444ce67bc11a2f482bd59bd";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  
+
+</head>
+</html>
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/atom.xml"
+            rel="noopener noreferrer"
+            target="_blank"
+            >
+            RSS
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#yml文件配置"><span class="toc-text">yml文件配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#本地deploy-sh配置"><span class="toc-text">本地deploy.sh配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#步骤"><span class="toc-text">步骤</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-自动发包到npm" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">自动发包到npm</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2020.03.19</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>钟文钦</span>
+        </span>
+      
+
+      
+
+
+      
+        <span>
+          <i class="icon-comment"></i>
+          <a href="http://www.forsigner.com/2020/03/19/自动发包到npm/#disqus_thread"></a>
+        </span>
+      
+
+      
+      <i class="fa fa-eye"></i> 
+        <span id="busuanzi_container_page_pv">
+           &nbsp热度 <span id="busuanzi_value_page_pv">
+           <i class="fa fa-spinner fa-spin"></i></span>℃
+        </span>
+      
+      
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>自动化测试使用的是circle ci，本例全都是以circle配置为准。</p>
+<p><a name="5XN8F"></a></p>
+<h2 id="yml文件配置"><a href="#yml文件配置" class="headerlink" title="yml文件配置"></a>yml文件配置</h2><p>测试的配置不多赘述，主要贴出自动publish的配置；</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># .circleci/config.yml文件</span></span><br><span class="line"></span><br><span class="line"><span class="attr">defaults:</span> <span class="meta">&amp;defaults</span></span><br><span class="line"><span class="attr">  docker:</span></span><br><span class="line"><span class="attr">    - image:</span> <span class="string">circleci/node:10</span></span><br><span class="line"><span class="attr">version:</span> <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="string">...</span></span><br><span class="line"><span class="attr">publish:</span> </span><br><span class="line">	<span class="string">&lt;&lt;:</span> <span class="meta">*defaults</span></span><br><span class="line"><span class="attr">  steps:</span></span><br><span class="line"><span class="attr">    - attach_workspace:</span></span><br><span class="line"><span class="attr">        at:</span> <span class="string">.</span></span><br><span class="line">    <span class="comment"># 自动发布不需要输入账号密码，只需token认证</span></span><br><span class="line"><span class="attr">    - run:</span> <span class="string">npm</span> <span class="string">config</span> <span class="string">set</span> <span class="string">//registry.npmjs.org/:_authToken</span> <span class="string">$NPM_TOKEN</span> </span><br><span class="line"><span class="attr">    - run:</span> <span class="string">npm</span> <span class="string">publish</span></span><br><span class="line"></span><br><span class="line"><span class="attr">workflows:</span></span><br><span class="line">	<span class="string">...</span></span><br><span class="line"><span class="attr">  - publish:</span></span><br><span class="line"><span class="attr">          requires:</span></span><br><span class="line"><span class="bullet">            -</span> <span class="string">build</span></span><br><span class="line"><span class="attr">          filters:</span></span><br><span class="line"><span class="attr">            branches:</span></span><br><span class="line">              <span class="comment"># 提交到分支，检测到有分支变动，才自动部署</span></span><br><span class="line"><span class="attr">              only:</span> <span class="string">/deploy/</span></span><br><span class="line"><span class="comment">#            ci 仍旧无法健测到tag，不用此方式自动部署</span></span><br><span class="line"><span class="comment">#            tags:</span></span><br><span class="line"><span class="comment">#              only: /^v[0-9]+(\.[0-9]+)*/</span></span><br><span class="line"><span class="comment">#            branches:</span></span><br><span class="line"><span class="comment">#              ignore: /.*/</span></span><br></pre></td></tr></table></figure>
+
+<p>在此之前，需要做的是：</p>
+<ol>
+<li>在自己的npm仓库生成token；</li>
+<li>在circle ci找到对应项目，把npm生产的token存到设置中；<blockquote>
+<p>做上面两步的原因，是因为npm publish 需要输入账号密码，但在ci自动发包的时候不可能将密码放到文件配置中，所以用到了npm token去直接关联；</p>
+</blockquote>
+</li>
+</ol>
+<p><a name="bPXXC"></a></p>
+<h2 id="本地deploy-sh配置"><a href="#本地deploy-sh配置" class="headerlink" title="本地deploy.sh配置"></a>本地deploy.sh配置</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/env bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## $1是可传变量</span></span><br><span class="line">npm version <span class="variable">$1</span> &amp;&amp; \</span><br><span class="line">git push</span><br></pre></td></tr></table></figure>
+
+<p><a name="5iuwD"></a></p>
+<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><ol>
+<li><p>创建deploy分支</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin master:deploy</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>当需要更新npm包版本的时候，把代码同步到deploy分支，即第一步的代码；</p>
+</li>
+<li><p>本地运行bash脚本 deploy.sh your version，当circle的测试跑完后并且成功后，会自动发包到npm上。</p>
+</li>
+</ol>
+
+    
+  </div>
+
+</article>
+
+
+   
+
+   
+  <div class="box-prev-next clearfix">
+    <a class="show pull-left" href="/2019/12/30/导出TypeScript格式的api到项目/">
+        <i class="icon icon-angle-left"></i>
+    </a>
+    <a class="show pull-right" href="/2020/05/21/手写eventHub/">
+        <i class="icon icon-angle-right"></i>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/atom.xml"
+              rel="noopener noreferrer"
+              target="_blank"
+              >
+              RSS
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'forsigner';
+    
+    var disqus_url = 'http://yoursite.com/2020/03/19/自动发包到npm/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//forsigner.disqus.com/count.js" async></script>
+
+
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    
+
+<!-- Gitalk评论插件通用代码 -->
+<div id="gitalk-container"></div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+const gitalk = new Gitalk({
+  clientID: '277317290454635afa73',
+  clientSecret: '78223c859304da5e8d71bfce136d436c6ff95c37',
+  repo: 'blog-comment',
+  owner: 'forsigner',
+  // 在这里设置一下截取前50个字符串, 这是因为 github 对 label 的长度有了要求, 如果超过
+  // 50个字符串则会报错.
+  // id: location.pathname.split('/').pop().substring(0, 49),
+  id: location.pathname,
+  admin: ['forsigner'],
+  // facebook-like distraction free mode
+  distractionFreeMode: false
+})
+gitalk.render('gitalk-container')
+</script>
+<!-- Gitalk代码结束 -->
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

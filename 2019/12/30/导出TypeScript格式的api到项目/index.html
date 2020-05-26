@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>导出TypeScript格式的api到项目 | 钟文钦的博客</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="ts node,">
+  
+
+  <meta name="description" content="背景最近项目往TypeScript方向重构，前端自己写的东西比较容易定义类型的，问题在于后端给的api数据无法定义类型，很多情况只能用any大法略过。幸好公司内部的api文档使用YApi搭建的，这个框架提供了文档导出的接口，接口包含了完整的数据类型的定义，这些定义取决于后端同事对api文档的维护程度，所以做这个导出api类型到项目中的好处不仅仅可以使整个项目比较完整严谨，还可以反推后端同事更好的对">
+<meta name="keywords" content="ts node">
+<meta property="og:type" content="article">
+<meta property="og:title" content="导出TypeScript格式的api到项目">
+<meta property="og:url" content="http://yoursite.com/2019/12/30/导出TypeScript格式的api到项目/index.html">
+<meta property="og:site_name" content="钟文钦的博客">
+<meta property="og:description" content="背景最近项目往TypeScript方向重构，前端自己写的东西比较容易定义类型的，问题在于后端给的api数据无法定义类型，很多情况只能用any大法略过。幸好公司内部的api文档使用YApi搭建的，这个框架提供了文档导出的接口，接口包含了完整的数据类型的定义，这些定义取决于后端同事对api文档的维护程度，所以做这个导出api类型到项目中的好处不仅仅可以使整个项目比较完整严谨，还可以反推后端同事更好的对">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-05-26T00:15:47.816Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="导出TypeScript格式的api到项目">
+<meta name="twitter:description" content="背景最近项目往TypeScript方向重构，前端自己写的东西比较容易定义类型的，问题在于后端给的api数据无法定义类型，很多情况只能用any大法略过。幸好公司内部的api文档使用YApi搭建的，这个框架提供了文档导出的接口，接口包含了完整的数据类型的定义，这些定义取决于后端同事对api文档的维护程度，所以做这个导出api类型到项目中的好处不仅仅可以使整个项目比较完整严谨，还可以反推后端同事更好的对">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbeddx" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-38189205-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?8dd284c51444ce67bc11a2f482bd59bd";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  
+
+</head>
+</html>
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/atom.xml"
+            rel="noopener noreferrer"
+            target="_blank"
+            >
+            RSS
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#背景"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#操作步骤"><span class="toc-text">操作步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-先获取api文档的JSON数据"><span class="toc-text">1. 先获取api文档的JSON数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-每个接口生成对应数据格式文件"><span class="toc-text">2. 每个接口生成对应数据格式文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-统一导出方法及类型"><span class="toc-text">3. 统一导出方法及类型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#感受"><span class="toc-text">感受</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-导出TypeScript格式的api到项目" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">导出TypeScript格式的api到项目</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2019.12.30</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>钟文钦</span>
+        </span>
+      
+
+      
+
+
+      
+        <span>
+          <i class="icon-comment"></i>
+          <a href="http://www.forsigner.com/2019/12/30/导出TypeScript格式的api到项目/#disqus_thread"></a>
+        </span>
+      
+
+      
+      <i class="fa fa-eye"></i> 
+        <span id="busuanzi_container_page_pv">
+           &nbsp热度 <span id="busuanzi_value_page_pv">
+           <i class="fa fa-spinner fa-spin"></i></span>℃
+        </span>
+      
+      
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>最近项目往TypeScript方向重构，前端自己写的东西比较容易定义类型的，问题在于后端给的api数据无法定义类型，很多情况只能用any大法略过。幸好公司内部的api文档使用YApi搭建的，这个框架提供了文档导出的接口，接口包含了完整的数据类型的定义，这些定义取决于后端同事对api文档的维护程度，所以做这个导出api类型到项目中的好处不仅仅可以使整个项目比较完整严谨，还可以反推后端同事更好的对api文档进行维护。</p>
+<p><a name="b65fP"></a></p>
+<h2 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h2><p><a name="zUYw5"></a></p>
+<h3 id="1-先获取api文档的JSON数据"><a href="#1-先获取api文档的JSON数据" class="headerlink" title="1. 先获取api文档的JSON数据"></a>1. 先获取api文档的JSON数据</h3><p>官方提供了以下的几个接口：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">/api/open/run_auto_test [运行自动化测试]</span><br><span class="line">/api/open/import_data [导入数据]</span><br><span class="line">/api/interface/add [新增接口]</span><br><span class="line">/api/interface/save [保存接口]</span><br><span class="line">/api/interface/up [更新接口]</span><br><span class="line">/api/interface/<span class="keyword">get</span> [获取接口]</span><br><span class="line">/api/interface/list [获取接口列表]</span><br><span class="line">/api/interface/list_menu [获取接口菜单]</span><br><span class="line">/api/interface/add_cat [新增接口分类]</span><br><span class="line">/api/interface/getCatMenu [获取所有分类]</span><br></pre></td></tr></table></figure>
+
+<p>刚开始的做法：</p>
+<ul>
+<li>先在本地获取接口列表；</li>
+<li>然后遍历列表去逐个获取接口；</li>
+</ul>
+<p>总共44个接口数据，大概耗时2min左右；</p>
+<p>通过阅读源码，发现有一个可以获取所有接口数据的api【/plugin/export】，这样就方便很多了，直接拿到所有数据然后格式化即可。</p>
+<p><a name="UcH37"></a></p>
+<h3 id="2-每个接口生成对应数据格式文件"><a href="#2-每个接口生成对应数据格式文件" class="headerlink" title="2. 每个接口生成对应数据格式文件"></a>2. 每个接口生成对应数据格式文件</h3><p>通过node，写脚本命令去跑，每个接口对应一个文件。</p>
+<p>这里有个小插曲，为了防止接口命名重复，刚开始是通过api的路径去生成对应的接口名称，其中里面包含的复杂类型用当前key值拼接上父级的变量名。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// api test1的路径为 /api/aaa/bbb/ccc</span></span><br><span class="line"><span class="comment">// api test2的路径为 /api/ddd/bbb/ccc</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 生成的interface命名</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// test1文件</span></span><br><span class="line">interface ApiAaaBbbCccReq &#123; <span class="comment">// 请求数据类型结构</span></span><br><span class="line">	uid: string;</span><br><span class="line">  test?: string;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface ApiAaaBbbCccRes &#123; 响应数据类型结构</span><br><span class="line">	status: number;</span><br><span class="line">  content: ApiAAABBBCCCContent</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface ApiAaaBbbCccContent &#123;</span><br><span class="line">	text: string;</span><br><span class="line">  itemList: ApiAaaBbbCccContentItemList;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface ApiAaaBbbCccContentItemList &#123;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment">// test2</span></span><br><span class="line">  </span><br><span class="line">interface ApiDddBbbCccReq &#123;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>这样情况显而易见就是interface名会很长，看起来跟用起来会很不舒服，虽然打包的时候会删掉这些，但在写的过程中仍旧会引用到这么长的类型。</p>
+<p>所以，最终完善成以下的方式。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// api test1的路径为 /api/aaa/bbb/ccc</span></span><br><span class="line"><span class="comment">// api test2的路径为 /api/ddd/bbb/ccc</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 生成的interface命名</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// test1文件</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 命名取路径后两位</span></span><br><span class="line"><span class="comment">// 因为这些接口类型会以同一个出口的方式引入，所以为了防止命名冲突，使用命名空间包裹</span></span><br><span class="line">declare namespace BbbCcc &#123; </span><br><span class="line">  interface Request &#123;</span><br><span class="line">    uid: string;</span><br><span class="line">  	test?: string;</span><br><span class="line">  	...</span><br><span class="line">  &#125;</span><br><span class="line">   interface Response &#123;</span><br><span class="line">     status: number;</span><br><span class="line">     content: Content</span><br><span class="line">   &#125;</span><br><span class="line">   interface Content &#123;</span><br><span class="line">     text: string;</span><br><span class="line">     itemList: Content.ItemList;</span><br><span class="line">   &#125;</span><br><span class="line">   namespace Content &#123;</span><br><span class="line">		 interface ItemList &#123;</span><br><span class="line">     	...</span><br><span class="line">     &#125;</span><br><span class="line">	 &#125;</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">  </span><br><span class="line"><span class="comment">// test2文件</span></span><br><span class="line">  </span><br><span class="line">declare namespace ApiDddBbbCcc &#123; <span class="comment">// 这部分做了处理，如果重名，则会用的完整的链接作变量名</span></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a name="d6ydV"></a></p>
+<h3 id="3-统一导出方法及类型"><a href="#3-统一导出方法及类型" class="headerlink" title="3. 统一导出方法及类型"></a>3. 统一导出方法及类型</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在api 中的 index.js下导出所有方法及类型</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 在此使用三斜线导入所有的类型，在页面中引用方法的同时，类型也已经引用好了</span></span><br><span class="line"><span class="comment">/// &lt;reference path="./apiList/BbbCcc.d.ts" /&gt;</span></span><br><span class="line"><span class="comment">/// &lt;reference path="./apiList/ApiDddBbbCcc.d.ts" /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; postRequest &#125; <span class="keyword">from</span> <span class="string">'../utils/Request'</span>; <span class="comment">// ajax请求方法</span></span><br><span class="line"><span class="keyword">import</span> config <span class="keyword">from</span> <span class="string">'../utils/config'</span>; <span class="comment">// 静态配置</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">$BBBCCC</span> (<span class="params">data: BbbCcc.Request, loading: boolean = true</span>): <span class="title">Promise</span>&lt;<span class="title">BbbCcc</span>.<span class="title">Response</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> postRequest(<span class="string">`<span class="subst">$&#123;config.baseurl&#125;</span>/api/aaa/bbb/ccc`</span>, data, loading)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">$ApiDddBbbCcc</span> (<span class="params">data: ApiDddBbbCcc.Request, loading: boolean = true</span>): <span class="title">Promise</span>&lt;<span class="title">ApiDddBbbCcc</span>.<span class="title">Response</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> postRequest(<span class="string">`<span class="subst">$&#123;config.baseurl&#125;</span>/api/ddd/bbb/ccc`</span>, data, loading)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a name="klsoD"></a></p>
+<h2 id="感受"><a href="#感受" class="headerlink" title="感受"></a>感受</h2><p>在改造完后，顺手迁移了个之前写的供能，最大的直观感受是太舒服了，因为vscode对typscript支持十分的友好。之前还需要去查找后端返回接口的类型，十分繁琐，或者直接用any带过，很不美观，现在直接从头到尾写ts毫无压力啊！！！</p>
+
+    
+  </div>
+
+</article>
+
+
+   
+
+   
+  <div class="box-prev-next clearfix">
+    <a class="show pull-left" href="/2019/09/03/spy-debugger调试H5页面/">
+        <i class="icon icon-angle-left"></i>
+    </a>
+    <a class="show pull-right" href="/2020/03/19/自动发包到npm/">
+        <i class="icon icon-angle-right"></i>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/atom.xml"
+              rel="noopener noreferrer"
+              target="_blank"
+              >
+              RSS
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'forsigner';
+    
+    var disqus_url = 'http://yoursite.com/2019/12/30/导出TypeScript格式的api到项目/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//forsigner.disqus.com/count.js" async></script>
+
+
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    
+
+<!-- Gitalk评论插件通用代码 -->
+<div id="gitalk-container"></div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+const gitalk = new Gitalk({
+  clientID: '277317290454635afa73',
+  clientSecret: '78223c859304da5e8d71bfce136d436c6ff95c37',
+  repo: 'blog-comment',
+  owner: 'forsigner',
+  // 在这里设置一下截取前50个字符串, 这是因为 github 对 label 的长度有了要求, 如果超过
+  // 50个字符串则会报错.
+  // id: location.pathname.split('/').pop().substring(0, 49),
+  id: location.pathname,
+  admin: ['forsigner'],
+  // facebook-like distraction free mode
+  distractionFreeMode: false
+})
+gitalk.render('gitalk-container')
+</script>
+<!-- Gitalk代码结束 -->
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>

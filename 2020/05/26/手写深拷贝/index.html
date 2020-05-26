@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>手写深拷贝 | 钟文钦的博客</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Ice-cor,前端,设计,前端开发,用户体验,设计,frontend,design,nodejs,JavaScript">
+  
+
+  <meta name="description" content="首先简单解释下深拷贝的概念；  概念在JS这门语言中，分为 基础类型 *及 *引用类型(复杂类型) 这两种，基础类型很简单，包括字符串、数字、布尔值、空值等等；而引用类型呢，主要描述的还是对象；当我们在复制一个值的时候，很简单，直接可以用 ‘=’ 去赋值，对于基础类型来说，很容易理解，直接赋值毫无悬念。然而对于引用类型来说，结果却大不相同，举个例子： 12345678let a = 1; // 数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="手写深拷贝">
+<meta property="og:url" content="http://yoursite.com/2020/05/26/手写深拷贝/index.html">
+<meta property="og:site_name" content="钟文钦的博客">
+<meta property="og:description" content="首先简单解释下深拷贝的概念；  概念在JS这门语言中，分为 基础类型 *及 *引用类型(复杂类型) 这两种，基础类型很简单，包括字符串、数字、布尔值、空值等等；而引用类型呢，主要描述的还是对象；当我们在复制一个值的时候，很简单，直接可以用 ‘=’ 去赋值，对于基础类型来说，很容易理解，直接赋值毫无悬念。然而对于引用类型来说，结果却大不相同，举个例子： 12345678let a = 1; // 数">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-05-26T00:16:26.860Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="手写深拷贝">
+<meta name="twitter:description" content="首先简单解释下深拷贝的概念；  概念在JS这门语言中，分为 基础类型 *及 *引用类型(复杂类型) 这两种，基础类型很简单，包括字符串、数字、布尔值、空值等等；而引用类型呢，主要描述的还是对象；当我们在复制一个值的时候，很简单，直接可以用 ‘=’ 去赋值，对于基础类型来说，很容易理解，直接赋值毫无悬念。然而对于引用类型来说，结果却大不相同，举个例子： 12345678let a = 1; // 数">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbeddx" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-38189205-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?8dd284c51444ce67bc11a2f482bd59bd";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  
+
+</head>
+</html>
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/atom.xml"
+            rel="noopener noreferrer"
+            target="_blank"
+            >
+            RSS
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概念"><span class="toc-text">概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#深拷贝"><span class="toc-text">深拷贝</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#JSON序列化"><span class="toc-text">JSON序列化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#缺点"><span class="toc-text">缺点</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#递归克隆"><span class="toc-text">递归克隆</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#基础对象"><span class="toc-text">基础对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#环"><span class="toc-text">环</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#正则、日期对象等"><span class="toc-text">正则、日期对象等</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#只考虑自身属性"><span class="toc-text">只考虑自身属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#测试"><span class="toc-text">测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#缺点："><span class="toc-text">缺点：</span></a></li></ol></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-手写深拷贝" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">手写深拷贝</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2020.05.26</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>钟文钦</span>
+        </span>
+      
+
+      
+
+
+      
+        <span>
+          <i class="icon-comment"></i>
+          <a href="http://www.forsigner.com/2020/05/26/手写深拷贝/#disqus_thread"></a>
+        </span>
+      
+
+      
+      <i class="fa fa-eye"></i> 
+        <span id="busuanzi_container_page_pv">
+           &nbsp热度 <span id="busuanzi_value_page_pv">
+           <i class="fa fa-spinner fa-spin"></i></span>℃
+        </span>
+      
+      
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>首先简单解释下深拷贝的概念；<br></p>
+<p><a name="O6T0N"></a></p>
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>在JS这门语言中，分为 <strong>基础类型 *<em>及 *</em>引用类型</strong>(复杂类型) 这两种，基础类型很简单，包括字符串、数字、布尔值、空值等等；而引用类型呢，主要描述的还是对象；<br><br><br>当我们在复制一个值的时候，很简单，直接可以用 ‘=’ 去赋值，对于基础类型来说，很容易理解，直接赋值毫无悬念。然而对于引用类型来说，结果却大不相同，举个例子：<br></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> a = <span class="number">1</span>; <span class="comment">// 数字为基础类型中一种</span></span><br><span class="line"><span class="keyword">let</span> b = a;</span><br><span class="line">a = <span class="number">2</span>;</span><br><span class="line">b = <span class="number">3</span>; <span class="comment">// 此时a为2，b为3，相互不受影响</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> o = &#123;&#125;; <span class="comment">// 对象是引用类型</span></span><br><span class="line"><span class="keyword">let</span> c = o;</span><br><span class="line">c.a = <span class="number">1</span>; <span class="comment">// 此时o的值为&#123;a: 1&#125;，较原来改变了</span></span><br></pre></td></tr></table></figure>
+
+<p><br>显而易见，如果是引用类型的直接赋值操作，那么c的后续操作会影响到原来o对象；<br>这是因为所有引用类型的值是存到内存中的，通过一个地址跟变量联系，如果对一个对象进行改变，那么拥有相同地址的所有变量都会相应而变，这就是为什么变量c改变o跟随着变的原因，这样直接的变量赋值，有人取名为 <strong>浅拷贝</strong>；<br></p>
+<p><a name="zBW5V"></a></p>
+<h2 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h2><p>深拷贝的作用，就是让变量单纯的复制值，从而使两个变量间互不受干扰；<br><a name="Cr6dd"></a></p>
+<h3 id="JSON序列化"><a href="#JSON序列化" class="headerlink" title="JSON序列化"></a>JSON序列化</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> o = &#123;<span class="attr">a</span>: <span class="number">1</span>, <span class="attr">b</span>: <span class="number">2</span>&#125;;</span><br><span class="line"><span class="keyword">let</span> c = <span class="built_in">JSON</span>.parse(<span class="built_in">JSON</span>.stringify(o)); <span class="comment">// c = &#123;a: 1, b: 2&#125;</span></span><br><span class="line"></span><br><span class="line">c.a=<span class="number">2</span>;</span><br><span class="line">o.a; <span class="comment">// 1</span></span><br></pre></td></tr></table></figure>
+
+<p>通过JSON序列化后的对象，可以实现引用间的切割，这是实现深拷贝中最简单的方法；<br></p>
+<p><a name="4ElXj"></a></p>
+<h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><ol>
+<li>不支持函数；</li>
+<li>不支持undefined;</li>
+<li>不支持Date、正则对象；</li>
+<li>不支持引用(环);</li>
+</ol>
+<p><br>综合来说，就是JSON序列化这种方法只支持符合JSON语法的类型，其余特殊的不是被忽略就是会被作处理；<br></p>
+<p><a name="KXuEE"></a></p>
+<h2 id="递归克隆"><a href="#递归克隆" class="headerlink" title="递归克隆"></a>递归克隆</h2><p><br>为了考虑复杂的对象，所以用递归去检测每个属性的类型，然后去做相对于的操作；<br></p>
+<p><a name="k7t1l"></a></p>
+<h3 id="基础对象"><a href="#基础对象" class="headerlink" title="基础对象"></a>基础对象</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 基础对象</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">deepClone</span>(<span class="params">source</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">Object</span>) &#123; <span class="comment">// 如果检测为对象</span></span><br><span class="line">      <span class="keyword">const</span> dist = <span class="keyword">new</span> <span class="built_in">Object</span>(); <span class="comment">// 新创建一个对象</span></span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">let</span> key <span class="keyword">in</span> source) &#123;</span><br><span class="line">        dist[key] = deepClone(source[key]); <span class="comment">// 检测每一项属性的类型，分别赋值到对应的key上</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> dist;</span><br><span class="line">    &#125;</span><br><span class="line">		<span class="keyword">return</span> source; <span class="comment">// 基础类型直接返回</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 数组</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">deepClone</span>(<span class="params">source</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">Array</span>) &#123; <span class="comment">// 如果检测为数组</span></span><br><span class="line">      <span class="keyword">const</span> dist = <span class="keyword">new</span> <span class="built_in">Array</span>(); <span class="comment">// 新创建一个数组</span></span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">let</span> key <span class="keyword">in</span> source) &#123;</span><br><span class="line">        dist[key] = deepClone(source[key]); <span class="comment">// 检测数组的每一项类型，分别赋值到对应的key上</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> dist;</span><br><span class="line">    &#125;</span><br><span class="line">		<span class="keyword">return</span> source; <span class="comment">// 基础类型直接返回</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">deepClone</span>(<span class="params">source</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">Function</span>) &#123; <span class="comment">// 如果检测为函数</span></span><br><span class="line">      <span class="comment">/**</span></span><br><span class="line"><span class="comment">       1.用匿名函数包裹，deepClone执行后是为一个新函数，满足互不引用</span></span><br><span class="line"><span class="comment">       2.使用apply调用原有函数，并且this指向原有函数，保证传入参数相同，也保证了执行结果相同</span></span><br><span class="line"><span class="comment">      */</span></span><br><span class="line">      <span class="keyword">const</span> dist = <span class="function"><span class="keyword">function</span> (<span class="params"></span>)</span>&#123;</span><br><span class="line">      	<span class="keyword">return</span> source.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>);</span><br><span class="line">      &#125;;</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">let</span> key <span class="keyword">in</span> source) &#123;</span><br><span class="line">        dist[key] = deepClone(source[key]); <span class="comment">// 检测函数属性的类型，分别赋值到对应的key上</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> dist;</span><br><span class="line">    &#125;</span><br><span class="line">		<span class="keyword">return</span> source; <span class="comment">// 基础类型直接返回</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><br>综合一下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> deepClone = <span class="function"><span class="params">source</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">Object</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">Array</span>) &#123;</span><br><span class="line">      <span class="keyword">const</span> dist = <span class="keyword">new</span> <span class="built_in">Array</span>();</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">Function</span>) &#123;</span><br><span class="line">      <span class="keyword">const</span> dist = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> source.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>);</span><br><span class="line">      &#125;;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> dist = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> key <span class="keyword">in</span> source) &#123;</span><br><span class="line">      dist[key] = deepClone(source[key]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> dist;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> source;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><a name="lasK9"></a></p>
+<h3 id="环"><a href="#环" class="headerlink" title="环"></a>环</h3><p>以上的代码，是只考虑到有边界的情况，如果对象中有环 <strong>(a.self = a)</strong>，那么上面的代码会导致对栈溢出爆栈，下面加入检测到环的情况；<br></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> cache = []; <span class="comment">// 保存所有类型为对象的二维数组 [原对象, 新对象]</span></span><br><span class="line"><span class="keyword">const</span> deepClone = <span class="function"><span class="params">source</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">Object</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> sourceDist = findCache(source);</span><br><span class="line">    <span class="keyword">if</span> (sourceDist) &#123;</span><br><span class="line">      <span class="keyword">return</span> sourceDist;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">let</span> dist;</span><br><span class="line">      <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">Array</span>) &#123;</span><br><span class="line">        dist = <span class="keyword">new</span> <span class="built_in">Array</span>();</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">Function</span>) &#123;</span><br><span class="line">        dist = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">          <span class="keyword">return</span> source.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>);</span><br><span class="line">        &#125;;</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        dist = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">      &#125;</span><br><span class="line">      cache.push([source, dist]); <span class="comment">// 将对象推到缓存中以作比较，首次的初始对象也被存入缓存中</span></span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">let</span> key <span class="keyword">in</span> source) &#123;</span><br><span class="line">        dist[key] = deepClone(source[key]);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> dist;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> source;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">findCache</span>(<span class="params">source</span>) </span>&#123; <span class="comment">// 检查缓存数组内是否有相同引用的对象，有则返回切断引用后的对象</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; cache.length; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (cache[i][<span class="number">0</span>] === source) &#123;</span><br><span class="line">      <span class="keyword">return</span> cache[i][<span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">undefined</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>环的检测稍微比较复杂和绕，不过理解了关键步骤就好办了；<br></p>
+<ol>
+<li>把所有对象都存到缓存中，包括其本身及属性中的对象；</li>
+<li>在设置每一个key之前，检查下缓存中是否有相同的对象引用，有的话则成一个环，所以缓存中会存取另外一个切断引用后的对象，方便此时使用；</li>
+</ol>
+<p><a name="Jt7Bp"></a></p>
+<h3 id="正则、日期对象等"><a href="#正则、日期对象等" class="headerlink" title="正则、日期对象等"></a>正则、日期对象等</h3><p><br>因为此类对象有自身的特殊表达方式，所以需要特殊处理；<br></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> cache = []; <span class="comment">// 保存所有类型为对象的二维数组 [原对象, 新对象]</span></span><br><span class="line"><span class="keyword">const</span> deepClone = <span class="function"><span class="params">source</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">Object</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> sourceDist = findCache(source);</span><br><span class="line">    <span class="keyword">if</span> (sourceDist) &#123;</span><br><span class="line">      <span class="keyword">return</span> sourceDist;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">let</span> dist;</span><br><span class="line">      <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">Array</span>) &#123;</span><br><span class="line">        dist = <span class="keyword">new</span> <span class="built_in">Array</span>();</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">Function</span>) &#123;</span><br><span class="line">        dist = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">          <span class="keyword">return</span> source.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>);</span><br><span class="line">        &#125;;</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">RegExp</span>) &#123;</span><br><span class="line">        dist = <span class="keyword">new</span> <span class="built_in">RegExp</span>(source.source, source.flags); <span class="comment">// 分别为正则文本及匹配标识</span></span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">Date</span>) &#123;</span><br><span class="line">        dist = <span class="keyword">new</span> <span class="built_in">Date</span>(source);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        dist = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">      &#125;</span><br><span class="line">      cache.push([source, dist]); <span class="comment">// 将对象推到缓存中以作比较，首次的初始对象也被存入缓存中</span></span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">let</span> key <span class="keyword">in</span> source) &#123;</span><br><span class="line">        dist[key] = deepClone(source[key]);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> dist;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> source;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">findCache</span>(<span class="params">source</span>) </span>&#123; <span class="comment">// 检查缓存数组内是否有相同引用的对象，有则返回切断引用后的对象</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; cache.length; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (cache[i][<span class="number">0</span>] === source) &#123;</span><br><span class="line">      <span class="keyword">return</span> cache[i][<span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">undefined</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a name="uIpI1"></a></p>
+<h3 id="只考虑自身属性"><a href="#只考虑自身属性" class="headerlink" title="只考虑自身属性"></a>只考虑自身属性</h3><p><br>因为 for…in 方法是会遍历原型上的属性，一般来说不拷贝原型，所以不考虑原型上的属性；</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> cache = []; <span class="comment">// 保存所有类型为对象的二维数组 [原对象, 新对象]</span></span><br><span class="line"><span class="keyword">const</span> deepClone = <span class="function"><span class="params">source</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">Object</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> sourceDist = findCache(source);</span><br><span class="line">    <span class="keyword">if</span> (sourceDist) &#123;</span><br><span class="line">      <span class="keyword">return</span> sourceDist;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">let</span> dist;</span><br><span class="line">      <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">Array</span>) &#123;</span><br><span class="line">        dist = <span class="keyword">new</span> <span class="built_in">Array</span>();</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">Function</span>) &#123;</span><br><span class="line">        dist = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">          <span class="keyword">return</span> source.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>);</span><br><span class="line">        &#125;;</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">RegExp</span>) &#123;</span><br><span class="line">        dist = <span class="keyword">new</span> <span class="built_in">RegExp</span>(source.source, source.flags); <span class="comment">// 分别为正则文本及匹配标识</span></span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (source <span class="keyword">instanceof</span> <span class="built_in">Date</span>) &#123;</span><br><span class="line">        dist = <span class="keyword">new</span> <span class="built_in">Date</span>(source);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        dist = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">      &#125;</span><br><span class="line">      cache.push([source, dist]); <span class="comment">// 将对象推到缓存中以作比较，首次的初始对象也被存入缓存中</span></span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">let</span> key <span class="keyword">in</span> source) &#123;</span><br><span class="line">        <span class="keyword">if</span> (source.hasOwnProperty(key)) &#123; <span class="comment">// 当前对象拥有此key才进行</span></span><br><span class="line">          dist[key] = deepClone(source[key]);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> dist;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> source;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">findCache</span>(<span class="params">source</span>) </span>&#123; <span class="comment">// 检查缓存数组内是否有相同引用的对象，有则返回切断引用后的对象</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; cache.length; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (cache[i][<span class="number">0</span>] === source) &#123;</span><br><span class="line">      <span class="keyword">return</span> cache[i][<span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">undefined</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a name="8UPFx"></a></p>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> obj = &#123;</span><br><span class="line">	a: <span class="number">1</span>,</span><br><span class="line">  b: <span class="string">'2'</span>,</span><br><span class="line">  c: <span class="literal">null</span>,</span><br><span class="line">  d: [<span class="number">1</span>, <span class="string">'2'</span>, <span class="number">3</span>],</span><br><span class="line">  e: <span class="keyword">new</span> <span class="built_in">Date</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">obj.self = obj;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> obj2 = deepClone(obj);</span><br><span class="line"></span><br><span class="line">obj2.d.push(<span class="number">4</span>) <span class="comment">// obj.d = [1 , '2', 3]; obj2.d = [1, '2', 3, 4]</span></span><br><span class="line">obj2.self === obj.self <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<p><a name="XWU0q"></a></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这个方法没有啥优点，就是把能想出来的情况列举出来，完全覆盖，在实际项目中还是引用第三方库保险的多；<br></p>
+<p><a name="4kBc1"></a></p>
+<h3 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h3><ol>
+<li>覆盖不够完全，例如Map、Set类型等；</li>
+<li>当对象属性项太多例如几万个，可能会爆栈；</li>
+<li>层级较多时可能运行速度较慢；</li>
+</ol>
+
+    
+  </div>
+
+</article>
+
+
+   
+
+   
+  <div class="box-prev-next clearfix">
+    <a class="show pull-left" href="/2020/05/21/手写eventHub/">
+        <i class="icon icon-angle-left"></i>
+    </a>
+    <a class="hide pull-right" href="/">
+        <i class="icon icon-angle-right"></i>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/atom.xml"
+              rel="noopener noreferrer"
+              target="_blank"
+              >
+              RSS
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'forsigner';
+    
+    var disqus_url = 'http://yoursite.com/2020/05/26/手写深拷贝/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//forsigner.disqus.com/count.js" async></script>
+
+
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    
+
+<!-- Gitalk评论插件通用代码 -->
+<div id="gitalk-container"></div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+const gitalk = new Gitalk({
+  clientID: '277317290454635afa73',
+  clientSecret: '78223c859304da5e8d71bfce136d436c6ff95c37',
+  repo: 'blog-comment',
+  owner: 'forsigner',
+  // 在这里设置一下截取前50个字符串, 这是因为 github 对 label 的长度有了要求, 如果超过
+  // 50个字符串则会报错.
+  // id: location.pathname.split('/').pop().substring(0, 49),
+  id: location.pathname,
+  admin: ['forsigner'],
+  // facebook-like distraction free mode
+  distractionFreeMode: false
+})
+gitalk.render('gitalk-container')
+</script>
+<!-- Gitalk代码结束 -->
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
