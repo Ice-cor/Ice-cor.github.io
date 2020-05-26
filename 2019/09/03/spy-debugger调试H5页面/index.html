@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>spy-debugger调试H5页面 | 钟文钦的博客</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="调试,">
+  
+
+  <meta name="description" content="今天看到看到一个H5的网页效果，觉得很不错，想看看怎么实现的，无奈是运行在微信的的内置浏览器中，并且需要微信验证，无法直接通过url跳转链接，网上找了些方法去绕过”请在微信客户端打开链接”这一限制。  1. 修改浏览器的User Agent修改User Agent方法 但是，这种方法在对于open.weixin.qq.com…开头的是不起效的，只能针对通过js对 MicroMessenger字段做">
+<meta name="keywords" content="调试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="spy-debugger调试H5页面">
+<meta property="og:url" content="http://yoursite.com/2019/09/03/spy-debugger调试H5页面/index.html">
+<meta property="og:site_name" content="钟文钦的博客">
+<meta property="og:description" content="今天看到看到一个H5的网页效果，觉得很不错，想看看怎么实现的，无奈是运行在微信的的内置浏览器中，并且需要微信验证，无法直接通过url跳转链接，网上找了些方法去绕过”请在微信客户端打开链接”这一限制。  1. 修改浏览器的User Agent修改User Agent方法 但是，这种方法在对于open.weixin.qq.com…开头的是不起效的，只能针对通过js对 MicroMessenger字段做">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2019/png/454049/1567495382520-d6b663c9-272c-4ee8-b783-8354bab41088.png#align=left&display=inline&height=397&name=image.png&originHeight=397&originWidth=1027&size=72330&status=done&width=1027">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2019/png/454049/1567500116590-4b3b70a0-f5f7-4b93-98cf-40860950ce2e.png#align=left&display=inline&height=395&name=%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20190903163818.png&originHeight=637&originWidth=709&size=30983&status=done&width=440">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2019/png/454049/1567500270646-f8b2a155-29b2-4f38-90ab-68b893991811.png#align=left&display=inline&height=170&name=%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20190903164416.png&originHeight=170&originWidth=299&size=6817&status=done&width=299">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2019/jpeg/454049/1567500327719-173c89c4-759c-49cd-96c4-d94cd2c62c4b.jpeg#align=left&display=inline&height=363&name=%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20190903163829.jpg&originHeight=1334&originWidth=750&size=62175&status=done&width=204">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2019/jpeg/454049/1567495907856-16aac12b-f0da-4b69-926c-63f2892f6191.jpeg#align=left&display=inline&height=404&name=%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20190903153130.jpg&originHeight=1334&originWidth=750&size=58870&status=done&width=227">
+<meta property="og:updated_time" content="2020-05-25T23:59:24.120Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="spy-debugger调试H5页面">
+<meta name="twitter:description" content="今天看到看到一个H5的网页效果，觉得很不错，想看看怎么实现的，无奈是运行在微信的的内置浏览器中，并且需要微信验证，无法直接通过url跳转链接，网上找了些方法去绕过”请在微信客户端打开链接”这一限制。  1. 修改浏览器的User Agent修改User Agent方法 但是，这种方法在对于open.weixin.qq.com…开头的是不起效的，只能针对通过js对 MicroMessenger字段做">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2019/png/454049/1567495382520-d6b663c9-272c-4ee8-b783-8354bab41088.png#align=left&display=inline&height=397&name=image.png&originHeight=397&originWidth=1027&size=72330&status=done&width=1027">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbeddx" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-38189205-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?8dd284c51444ce67bc11a2f482bd59bd";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  
+
+</head>
+</html>
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/atom.xml"
+            rel="noopener noreferrer"
+            target="_blank"
+            >
+            RSS
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-修改浏览器的User-Agent"><span class="toc-text">1. 修改浏览器的User Agent</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-spy-debugger调试"><span class="toc-text">2. spy-debugger调试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#踩坑1（针对ios）"><span class="toc-text">踩坑1（针对ios）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#解决方法"><span class="toc-text">解决方法</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#踩坑2（针对ios）"><span class="toc-text">踩坑2（针对ios）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#解决方法："><span class="toc-text">解决方法：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#效果"><span class="toc-text">效果</span></a></li></ol></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-spy-debugger调试H5页面" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">spy-debugger调试H5页面</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2019.09.03</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>钟文钦</span>
+        </span>
+      
+
+      
+
+
+      
+        <span>
+          <i class="icon-comment"></i>
+          <a href="http://www.forsigner.com/2019/09/03/spy-debugger调试H5页面/#disqus_thread"></a>
+        </span>
+      
+
+      
+      <i class="fa fa-eye"></i> 
+        <span id="busuanzi_container_page_pv">
+           &nbsp热度 <span id="busuanzi_value_page_pv">
+           <i class="fa fa-spinner fa-spin"></i></span>℃
+        </span>
+      
+      
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>今天看到看到一个H5的网页效果，觉得很不错，想看看怎么实现的，无奈是运行在微信的的内置浏览器中，并且需要微信验证，无法直接通过url跳转链接，网上找了些方法去绕过”请在微信客户端打开链接”这一限制。</p>
+<p><a name="8aoq6"></a></p>
+<h2 id="1-修改浏览器的User-Agent"><a href="#1-修改浏览器的User-Agent" class="headerlink" title="1. 修改浏览器的User Agent"></a>1. 修改浏览器的User Agent</h2><p><a href="https://zhuanlan.zhihu.com/p/39856170" target="_blank" rel="noopener">修改User Agent方法</a></p>
+<p>但是，这种方法在对于open.weixin.qq.com…开头的是不起效的，只能针对通过js对 <code>MicroMessenger</code>字段做拦截的情况。</p>
+<p><a name="HaoRl"></a></p>
+<h2 id="2-spy-debugger调试"><a href="#2-spy-debugger调试" class="headerlink" title="2. spy-debugger调试"></a>2. spy-debugger调试</h2><p>一站式页面调试、抓包工具。远程调试任何手机浏览器页面，任何手机移动端webview（如：微信，HybridApp等）。支持HTTP/HTTPS，无需USB连接设备。  </p>
+<p><a href="https://github.com/wuchangming/spy-debugger" target="_blank" rel="noopener">官方教程</a></p>
+<p><a name="yY3Du"></a></p>
+<h3 id="踩坑1（针对ios）"><a href="#踩坑1（针对ios）" class="headerlink" title="踩坑1（针对ios）"></a>踩坑1（针对ios）</h3><p><strong><br></strong><img src="https://cdn.nlark.com/yuque/0/2019/png/454049/1567495382520-d6b663c9-272c-4ee8-b783-8354bab41088.png#align=left&display=inline&height=397&name=image.png&originHeight=397&originWidth=1027&size=72330&status=done&width=1027" alt="image.png"><strong><br></strong><br>如果按照官方教程来，第四步死活打不开官方所给的链接。</p>
+<p><a name="HSZvy"></a></p>
+<h4 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h4><ol>
+<li>先打开 跑完 spy-debugger命令后的网页，用相机扫描所给的二维码，并用safari浏览器打开；</li>
+</ol>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/png/454049/1567500116590-4b3b70a0-f5f7-4b93-98cf-40860950ce2e.png#align=left&display=inline&height=395&name=%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20190903163818.png&originHeight=637&originWidth=709&size=30983&status=done&width=440" alt="微信图片_20190903163818.png"><br><br><br></p>
+<ol start="2">
+<li>修改safari打开后的url链接，把127.0.0.1改成本机的ip；</li>
+</ol>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/png/454049/1567500270646-f8b2a155-29b2-4f38-90ab-68b893991811.png#align=left&display=inline&height=170&name=%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20190903164416.png&originHeight=170&originWidth=299&size=6817&status=done&width=299" alt="微信图片_20190903164416.png"><br></p>
+<ol start="3">
+<li>可以正常显示证书下载页面；</li>
+</ol>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/jpeg/454049/1567500327719-173c89c4-759c-49cd-96c4-d94cd2c62c4b.jpeg#align=left&display=inline&height=363&name=%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20190903163829.jpg&originHeight=1334&originWidth=750&size=62175&status=done&width=204" alt="微信图片_20190903163829.jpg"></p>
+<ol start="4">
+<li>然后下载安装；</li>
+</ol>
+<p><a name="sRNJy"></a></p>
+<h3 id="踩坑2（针对ios）"><a href="#踩坑2（针对ios）" class="headerlink" title="踩坑2（针对ios）"></a>踩坑2（针对ios）</h3><p>如果按官方教程来，进行到最后，仍会有如下的提示：</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/jpeg/454049/1567495907856-16aac12b-f0da-4b69-926c-63f2892f6191.jpeg#align=left&display=inline&height=404&name=%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20190903153130.jpg&originHeight=1334&originWidth=750&size=58870&status=done&width=227" alt="微信图片_20190903153130.jpg"><br><br><br>这是因为没有下载的证书完全信任导致。<br></p>
+<p><a name="9nOzz"></a></p>
+<h4 id="解决方法："><a href="#解决方法：" class="headerlink" title="解决方法："></a>解决方法：</h4><p><br><strong>通用 =&gt; 关于本机 =&gt; 证书信任设置 ，然后选择对应的证书信任即可。</strong><br>**<br></p>
+<p><a name="woeJW"></a></p>
+<h3 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h3><br>
+<br>**![微信图片_20190903153844.jpg](https://cdn.nlark.com/yuque/0/2019/jpeg/454049/1567496339837-2b1892ca-8c21-429f-b545-28f55ecb0fb1.jpeg#align=left&display=inline&height=377&name=%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20190903153844.jpg&originHeight=1334&originWidth=750&size=77837&status=done&width=212)**<br>**（****手机端）**<br>**<br>**<br>**<br>**![1567496107(1).jpg](https://cdn.nlark.com/yuque/0/2019/jpeg/454049/1567496132658-232a2737-7037-4898-a3eb-3cd5e4e2e367.jpeg#align=left&display=inline&height=711&name=1567496107%281%29.jpg&originHeight=711&originWidth=1899&size=111514&status=done&width=1899)**<br>**（PC端)**<br>**<br>**<br>最后即可愉快的调试了~
+
+    
+  </div>
+
+</article>
+
+
+   
+
+   
+  <div class="box-prev-next clearfix">
+    <a class="show pull-left" href="/2019/07/24/js面向面试(1)/">
+        <i class="icon icon-angle-left"></i>
+    </a>
+    <a class="hide pull-right" href="/">
+        <i class="icon icon-angle-right"></i>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/atom.xml"
+              rel="noopener noreferrer"
+              target="_blank"
+              >
+              RSS
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'forsigner';
+    
+    var disqus_url = 'http://yoursite.com/2019/09/03/spy-debugger调试H5页面/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//forsigner.disqus.com/count.js" async></script>
+
+
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    
+
+<!-- Gitalk评论插件通用代码 -->
+<div id="gitalk-container"></div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+const gitalk = new Gitalk({
+  clientID: '277317290454635afa73',
+  clientSecret: '78223c859304da5e8d71bfce136d436c6ff95c37',
+  repo: 'blog-comment',
+  owner: 'forsigner',
+  // 在这里设置一下截取前50个字符串, 这是因为 github 对 label 的长度有了要求, 如果超过
+  // 50个字符串则会报错.
+  // id: location.pathname.split('/').pop().substring(0, 49),
+  id: location.pathname,
+  admin: ['forsigner'],
+  // facebook-like distraction free mode
+  distractionFreeMode: false
+})
+gitalk.render('gitalk-container')
+</script>
+<!-- Gitalk代码结束 -->
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
