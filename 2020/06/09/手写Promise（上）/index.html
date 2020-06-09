@@ -23,7 +23,7 @@
 <meta property="og:site_name" content="钟文钦的博客">
 <meta property="og:description" content="Promise对于现在的前端来说并不陌生，在项目中用的也算频繁，但是交流一番后发现很多人只停留在用的基础上，或者说有点经验的也只是了解到能解决回调地狱的问题，但对其原理只是一知半解，所以今天写一下Promise，深入了解一下其原理。 Promise的优点1.优化代码的结构，使代码相对清晰可读；2.消灭if(err)的代码； Promise的使用通常在封装ajax的时候，用Promise会比较方便，">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-06-09T15:23:33.891Z">
+<meta property="og:updated_time" content="2020-06-09T15:24:30.763Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="手写Promise（上）">
 <meta name="twitter:description" content="Promise对于现在的前端来说并不陌生，在项目中用的也算频繁，但是交流一番后发现很多人只停留在用的基础上，或者说有点经验的也只是了解到能解决回调地狱的问题，但对其原理只是一知半解，所以今天写一下Promise，深入了解一下其原理。 Promise的优点1.优化代码的结构，使代码相对清晰可读；2.消灭if(err)的代码； Promise的使用通常在封装ajax的时候，用Promise会比较方便，">
@@ -253,7 +253,7 @@ ga('send', 'pageview');
 <li>对象属性(then/finally/catch)</li>
 <li>对象内部属性(state = pendding/fulfilled/rejected)</li>
 </ol>
-<h2 id="根据A-规范手写Promise"><a href="#根据A-规范手写Promise" class="headerlink" title="根据A+规范手写Promise"></a>根据A+规范手写Promise</h2><p><br>这里通过测试驱动开发的方式去写代码，使用到chai、sinon、sinon-chai的库，用TypeScript来写。<br><br><br><a href="https://promisesaplus.com/" target="_blank" rel="noopener">Promise A+规范</a><br></p>
+<h2 id="根据A-规范手写Promise"><a href="#根据A-规范手写Promise" class="headerlink" title="根据A+规范手写Promise"></a>根据A+规范手写Promise</h2><p>这里通过测试驱动开发的方式去写代码，使用到chai、sinon、sinon-chai的库，用TypeScript来写。<br><br><a href="https://promisesaplus.com/" target="_blank" rel="noopener">Promise A+规范</a><br></p>
 <h3 id="测试与开发"><a href="#测试与开发" class="headerlink" title="测试与开发"></a>测试与开发</h3><h4 id="基础测试"><a href="#基础测试" class="headerlink" title="基础测试"></a>基础测试</h4><ul>
 <li>Promise是一个类</li>
 <li>类拥有 then 方法</li>
