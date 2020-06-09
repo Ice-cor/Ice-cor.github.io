@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>手写new及支持new的bind | 钟文钦的博客</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="js new,">
+  
+
+  <meta name="description" content="new的命令与原理new运算符创建一个用户定义的对象类型的实例或具有构造函数的内置对象的实例。new 关键字会进行如下的操作：  创建一个空的简单JavaScript对象（即{}）； 链接该对象（即设置该对象的构造函数）到另一个对象 ； 将步骤1新创建的对象作为this的上下文 ； 如果该函数没有返回对象，则返回this。 摘自 MDN new篇章     效果：1234567891011121">
+<meta name="keywords" content="js new">
+<meta property="og:type" content="article">
+<meta property="og:title" content="手写new及支持new的bind">
+<meta property="og:url" content="http://yoursite.com/2020/06/09/手写new及支持new的bind/index.html">
+<meta property="og:site_name" content="钟文钦的博客">
+<meta property="og:description" content="new的命令与原理new运算符创建一个用户定义的对象类型的实例或具有构造函数的内置对象的实例。new 关键字会进行如下的操作：  创建一个空的简单JavaScript对象（即{}）； 链接该对象（即设置该对象的构造函数）到另一个对象 ； 将步骤1新创建的对象作为this的上下文 ； 如果该函数没有返回对象，则返回this。 摘自 MDN new篇章     效果：1234567891011121">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-06-09T15:11:04.547Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="手写new及支持new的bind">
+<meta name="twitter:description" content="new的命令与原理new运算符创建一个用户定义的对象类型的实例或具有构造函数的内置对象的实例。new 关键字会进行如下的操作：  创建一个空的简单JavaScript对象（即{}）； 链接该对象（即设置该对象的构造函数）到另一个对象 ； 将步骤1新创建的对象作为this的上下文 ； 如果该函数没有返回对象，则返回this。 摘自 MDN new篇章     效果：1234567891011121">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbeddx" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-38189205-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?8dd284c51444ce67bc11a2f482bd59bd";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  
+
+</head>
+</html>
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/atom.xml"
+            rel="noopener noreferrer"
+            target="_blank"
+            >
+            RSS
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#new的命令与原理"><span class="toc-text">new的命令与原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#效果："><span class="toc-text">效果：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#原理解析"><span class="toc-text">原理解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#关键"><span class="toc-text">关键</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#手写new"><span class="toc-text">手写new</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#支持new的bind"><span class="toc-text">支持new的bind</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#存在问题"><span class="toc-text">存在问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#改进"><span class="toc-text">改进</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-手写new及支持new的bind" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">手写new及支持new的bind</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2020.06.09</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>钟文钦</span>
+        </span>
+      
+
+      
+
+
+      
+        <span>
+          <i class="icon-comment"></i>
+          <a href="http://www.forsigner.com/2020/06/09/手写new及支持new的bind/#disqus_thread"></a>
+        </span>
+      
+
+      
+      <i class="fa fa-eye"></i> 
+        <span id="busuanzi_container_page_pv">
+           &nbsp热度 <span id="busuanzi_value_page_pv">
+           <i class="fa fa-spinner fa-spin"></i></span>℃
+        </span>
+      
+      
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p><a name="ISQ0V"></a></p>
+<h2 id="new的命令与原理"><a href="#new的命令与原理" class="headerlink" title="new的命令与原理"></a>new的命令与原理</h2><p><br><strong>new运算符</strong>创建一个用户定义的对象类型的实例或具有构造函数的内置对象的实例。new 关键字会进行如下的操作：</p>
+<ol>
+<li>创建一个空的简单JavaScript对象（即{}）；</li>
+<li>链接该对象（即设置该对象的构造函数）到另一个对象 ；</li>
+<li>将步骤1新创建的对象作为this的上下文 ；</li>
+<li>如果该函数没有返回对象，则返回this。<blockquote>
+<p>摘自 MDN new篇章</p>
+</blockquote>
+</li>
+</ol>
+<p><a name="CcdWg"></a></p>
+<h3 id="效果："><a href="#效果：" class="headerlink" title="效果："></a>效果：</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// new 操作符</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params">name, age</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name;</span><br><span class="line">  <span class="keyword">this</span>.age = age;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> o = <span class="keyword">new</span> Person(<span class="string">'张三'</span>, <span class="number">18</span>)</span><br><span class="line"></span><br><span class="line">o.name === <span class="string">'张三'</span> <span class="comment">// ture</span></span><br><span class="line">o.age === <span class="number">18</span> <span class="comment">// true</span></span><br><span class="line">o.constructor === Person <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 如果构造函数有返回值</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person1</span>(<span class="params">name, age</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name;</span><br><span class="line">  <span class="keyword">this</span>.age = age;</span><br><span class="line">  <span class="keyword">return</span> &#123;<span class="attr">name</span>: <span class="string">'李四'</span>&#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person2</span>(<span class="params">name, age</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name;</span><br><span class="line">  <span class="keyword">this</span>.age = age;</span><br><span class="line">  <span class="keyword">return</span> <span class="string">'hi'</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> o1 = <span class="keyword">new</span> Person1(<span class="string">'张三'</span>, <span class="number">19</span>);</span><br><span class="line"><span class="keyword">let</span> o2 = <span class="keyword">new</span> Person2(<span class="string">'王五'</span>, <span class="number">20</span>)</span><br><span class="line"></span><br><span class="line">o1.name <span class="comment">// '李四' 构造函数返回值是对象，则为此对象</span></span><br><span class="line">o2.name <span class="comment">// ‘王五’ 构造函数返回值是基础类型，则返回this，此时的this指向的是new创建的对象</span></span><br></pre></td></tr></table></figure>
+
+<p><a name="hgD9z"></a></p>
+<h3 id="原理解析"><a href="#原理解析" class="headerlink" title="原理解析"></a>原理解析</h3><p>在使用<strong>new运算符</strong>的时候，会经历以下过程：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// new 操作符</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params">name, age</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name;</span><br><span class="line">  <span class="keyword">this</span>.age = age;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> o = <span class="keyword">new</span> Person(<span class="string">'张三'</span>, <span class="number">18</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">//  模拟过程</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params">name, age</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> obj = &#123;&#125;; <span class="comment">// 创建一个新对象</span></span><br><span class="line">  obj.__proto__ = Person.prototype <span class="comment">// 将构造函数的原型复制到新对象上</span></span><br><span class="line">  </span><br><span class="line">  <span class="keyword">this</span>.name = name;</span><br><span class="line">  <span class="keyword">this</span>.age = age;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 没有写返回值则默认返回this</span></span><br><span class="line">  <span class="comment">// this在new执行时，会指向新创建的对象obj</span></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a name="bcZEi"></a></p>
+<h3 id="关键"><a href="#关键" class="headerlink" title="关键"></a>关键</h3><p>从代码来看，手写new的关键在于：</p>
+<ol>
+<li>通过构造函数返回值来判断返回什么东西，如果没有return(默认返回undefined)则会返回this;</li>
+<li>this的指向为新创建的对象；</li>
+<li>实例对象的constructor会是这个构造函数;</li>
+</ol>
+<p><a name="teUkf"></a></p>
+<h2 id="手写new"><a href="#手写new" class="headerlink" title="手写new"></a>手写new</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 手写new</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** </span></span><br><span class="line"><span class="comment">	*@param(Function) fn 为传入的构造函数</span></span><br><span class="line"><span class="comment">  *@param(any) args 为构造函数的所有参数</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">myNew</span>(<span class="params">fn, ...args</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> obj = &#123;&#125;; <span class="comment">// 创建一个对象</span></span><br><span class="line">	</span><br><span class="line">  <span class="comment">// __proto__不是标准属性，项目中不建议使用</span></span><br><span class="line">  <span class="comment">// 将构造函数的原型复制到新对象上</span></span><br><span class="line">  obj.__proto__ = fn.prototype;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> result = fn.call(obj, ...args); <span class="comment">// 绑定函数的this指向obj，并执行</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 如果构造函数有返回值切为对象，返回这个构造函数的返回值</span></span><br><span class="line">  <span class="comment">// 否则返回新创建的对象obj</span></span><br><span class="line">  <span class="keyword">return</span> result <span class="keyword">instanceof</span> <span class="built_in">Object</span> &amp;&amp; result !== <span class="literal">null</span> ? result : obj;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params">name, age</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name;</span><br><span class="line">  <span class="keyword">this</span>.age = age;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person2</span>(<span class="params">name, age</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name;</span><br><span class="line">  <span class="keyword">this</span>.age = age;</span><br><span class="line">  <span class="keyword">return</span> &#123;<span class="attr">name</span>: <span class="string">'李四'</span>&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Person.prototype.sayHi = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">"hi"</span>);</span><br><span class="line">&#125;;</span><br><span class="line">Person2.prototype.sayHi = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">"hi"</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 测试</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> newObj = myNew(Person, <span class="string">"张三"</span>, <span class="number">18</span>);</span><br><span class="line">newObj.name <span class="comment">// 张三</span></span><br><span class="line">newObj.sayHi() <span class="comment">// 'hi'</span></span><br><span class="line">newObj.constructor === Person <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> newObj2 = myNew(Person2, <span class="string">"张三"</span>, <span class="number">18</span>);</span><br><span class="line">newObj2.name <span class="comment">// 李四</span></span><br><span class="line">newObj.constructor === Person <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<p><br>其实只要明白了执行原理，手写new也不是难事。<br></p>
+<p><a name="oIdO4"></a></p>
+<h2 id="支持new的bind"><a href="#支持new的bind" class="headerlink" title="支持new的bind"></a>支持new的bind</h2><p><br>先看看上次写的bind代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Function</span>.prototype.myBind = <span class="function"><span class="keyword">function</span>(<span class="params">context, ...args</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> context === <span class="string">'undefined'</span> || context === <span class="literal">null</span>) &#123;</span><br><span class="line">    context = <span class="built_in">window</span>;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    context = <span class="built_in">Object</span>(context);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">const</span> _this = <span class="keyword">this</span></span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">bindResult</span>(<span class="params">...args2</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> _this.call(context, ...args, ...args2);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><a name="k4rCw"></a></p>
+<h3 id="存在问题"><a href="#存在问题" class="headerlink" title="存在问题"></a>存在问题</h3><p>在上面new的解析时提到，<strong>如果该函数没有返回对象，则返回this，this指向新创建的对象；</strong><br>**</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params">name, age</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name</span><br><span class="line">  <span class="keyword">this</span>.age = age</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> obj = &#123;<span class="attr">name</span>: <span class="string">'张三'</span>, <span class="attr">age</span>: <span class="number">18</span>&#125;</span><br><span class="line"><span class="keyword">let</span> foo = Person.myBind(obj) <span class="comment">// 此时foo的值为function bindResult，this指向obj</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 函数 bindResult 的返回值为 _this.call(context, ...args, ...args2)</span></span><br><span class="line"><span class="comment">// 此处 _this 指向的是传入的构造函数 Person, Person 执行时并没有返回值</span></span><br><span class="line"><span class="comment">// 所以执行new时，会返回新创建的对象，因为没有绑定属性所以是 &#123;&#125;</span></span><br><span class="line"><span class="comment">// 而且还会改变原有obj的值</span></span><br><span class="line"><span class="keyword">let</span> newFoo = <span class="keyword">new</span> foo() <span class="comment">// &#123;&#125;</span></span><br><span class="line"><span class="comment">/** 相当于执行</span></span><br><span class="line"><span class="comment">	function bindResult(...arg2) &#123;</span></span><br><span class="line"><span class="comment">  	let obj = &#123;&#125;</span></span><br><span class="line"><span class="comment">    obj.__proto__ = bindResult.prototype</span></span><br><span class="line"><span class="comment">    return _this.call(context, ...args, ...args2); // return undeined;</span></span><br><span class="line"><span class="comment">    // 等同于 return this; this指向obj即 &#123;&#125;</span></span><br><span class="line"><span class="comment">  &#125;</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line">obj <span class="comment">// &#123;name: undefined, age: undefined&#125; (Person.call(obj, undefined, undefined))</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 正常使用bind</span></span><br><span class="line"><span class="keyword">let</span> person1 = Person.bind(obj, <span class="string">'李四'</span>, <span class="number">20</span>)</span><br><span class="line"><span class="keyword">let</span> person2 = <span class="keyword">new</span> person1() <span class="comment">// person2 为对象 &#123;name: '李四', age: 20&#125;</span></span><br><span class="line">obj <span class="comment">// &#123;name: '张三', age: 18&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p><br>与正常的 *<em>bind *</em>方法对比，很明显可以看出 new 执行时，this仍然没有改变，为原来的 obj ，这就跟原版执行 new 的情况不一样，所以需要改进。<br></p>
+<p><a name="DAhHP"></a></p>
+<h3 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h3><p>需要改进的方面主要时检测是否使用了 new运算符， 然后针对此类情况做相对于的操作。<br></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Function</span>.prototype.myBind = <span class="function"><span class="keyword">function</span>(<span class="params">context, ...args</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> context === <span class="string">'undefined'</span> || context === <span class="literal">null</span>) &#123;</span><br><span class="line">    context = <span class="built_in">window</span>;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    context = <span class="built_in">Object</span>(context);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">const</span> _this = <span class="keyword">this</span></span><br><span class="line">  <span class="keyword">const</span> bindResult = <span class="function"><span class="keyword">function</span>(<span class="params">...agrs2</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> _this.call(</span><br><span class="line">      <span class="comment">// 在new运算符中，this指向新创建的对象</span></span><br><span class="line">      <span class="comment">// 判断此对象的构造函数是否为bindResult</span></span><br><span class="line">      <span class="comment">// 如果为真，则使用了new运算符，返回this即可</span></span><br><span class="line">      <span class="keyword">this</span> <span class="keyword">instanceof</span> bindResult ? <span class="keyword">this</span> : context, </span><br><span class="line">      ...args, </span><br><span class="line">      ...args2</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">	<span class="keyword">if</span>(<span class="keyword">this</span>.prototype)&#123;</span><br><span class="line">    bindResult.prototype = <span class="keyword">this</span>.prototype <span class="comment">// 将bindResult的原型指向构造函数的原型</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> bindResult;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 测试</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Person</span>(<span class="params">name, age</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name</span><br><span class="line">  <span class="keyword">this</span>.age = age</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> obj = &#123;<span class="attr">name</span>: <span class="string">'张三'</span>, <span class="attr">age</span>: <span class="number">18</span>&#125;</span><br><span class="line"><span class="keyword">let</span> foo = Person.myBind(obj) <span class="comment">// 此时foo的值为function bindResult，this指向obj</span></span><br><span class="line"><span class="keyword">let</span> newFoo = <span class="keyword">new</span> foo(<span class="string">'李四'</span>, <span class="number">20</span>) <span class="comment">// &#123;name: '李四', age: 20&#125;</span></span><br><span class="line">obj <span class="comment">// &#123;name: '张三', age: 18&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p><a name="mBytH"></a></p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>重点在于：</p>
+<ol>
+<li>通过call或者apply强绑定this指向；</li>
+<li>可以动态传参及静态传参；</li>
+<li>检测是否使用new运算符，从而返回对应的值；</li>
+</ol>
+
+    
+  </div>
+
+</article>
+
+
+   
+
+   
+  <div class="box-prev-next clearfix">
+    <a class="show pull-left" href="/2020/06/09/手写call、apply、及bind/">
+        <i class="icon icon-angle-left"></i>
+    </a>
+    <a class="show pull-right" href="/2020/06/09/手写Promise（上）/">
+        <i class="icon icon-angle-right"></i>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/atom.xml"
+              rel="noopener noreferrer"
+              target="_blank"
+              >
+              RSS
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'forsigner';
+    
+    var disqus_url = 'http://yoursite.com/2020/06/09/手写new及支持new的bind/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//forsigner.disqus.com/count.js" async></script>
+
+
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    
+
+<!-- Gitalk评论插件通用代码 -->
+<div id="gitalk-container"></div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+const gitalk = new Gitalk({
+  clientID: '277317290454635afa73',
+  clientSecret: '78223c859304da5e8d71bfce136d436c6ff95c37',
+  repo: 'blog-comment',
+  owner: 'forsigner',
+  // 在这里设置一下截取前50个字符串, 这是因为 github 对 label 的长度有了要求, 如果超过
+  // 50个字符串则会报错.
+  // id: location.pathname.split('/').pop().substring(0, 49),
+  id: location.pathname,
+  admin: ['forsigner'],
+  // facebook-like distraction free mode
+  distractionFreeMode: false
+})
+gitalk.render('gitalk-container')
+</script>
+<!-- Gitalk代码结束 -->
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
