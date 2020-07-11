@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+
+
+  <html class="light page-post">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <title>手写Promise（下） | 钟文钦的博客</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Ice-cor,前端,设计,前端开发,用户体验,设计,frontend,design,nodejs,JavaScript">
+  
+
+  <meta name="description" content="之前手写Promise完成了大部分功能，剩余的因为比较繁琐，所以放到了这一部分详细讲解。  微任务之前一直使用setTimeout去模拟微任务操作，因为兼容性好；但是原生Promise其实是微任务，优先级会比宏任务定时器要高，所以后面会使用微任务去实现。process.nextTick(()=&amp;gt;{})本来想用setImmediate代替setTimeout的，后来发现依旧有时间差的问题，如果">
+<meta property="og:type" content="article">
+<meta property="og:title" content="手写Promise（下）">
+<meta property="og:url" content="http://yoursite.com/2020/06/11/手写Promise（下）/index.html">
+<meta property="og:site_name" content="钟文钦的博客">
+<meta property="og:description" content="之前手写Promise完成了大部分功能，剩余的因为比较繁琐，所以放到了这一部分详细讲解。  微任务之前一直使用setTimeout去模拟微任务操作，因为兼容性好；但是原生Promise其实是微任务，优先级会比宏任务定时器要高，所以后面会使用微任务去实现。process.nextTick(()=&amp;gt;{})本来想用setImmediate代替setTimeout的，后来发现依旧有时间差的问题，如果">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-07-11T11:50:07.836Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="手写Promise（下）">
+<meta name="twitter:description" content="之前手写Promise完成了大部分功能，剩余的因为比较繁琐，所以放到了这一部分详细讲解。  微任务之前一直使用setTimeout去模拟微任务操作，因为兼容性好；但是原生Promise其实是微任务，优先级会比宏任务定时器要高，所以后面会使用微任务去实现。process.nextTick(()=&amp;gt;{})本来想用setImmediate代替setTimeout的，后来发现依旧有时间差的问题，如果">
+
+  
+
+  
+    <link rel="icon" href="/favicon.ico">
+  
+
+  <link href="/css/styles.css?v=c114cbeddx" rel="stylesheet">
+
+
+  
+    <link rel="stylesheet" href="/css/personal-style.css">
+  
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-38189205-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?8dd284c51444ce67bc11a2f482bd59bd";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+	(function(){
+	    var bp = document.createElement('script');
+	    var curProtocol = window.location.protocol.split(':')[0];
+	    if (curProtocol === 'https') {
+	        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+	    }
+	    else {
+	        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+	    }
+	    var s = document.getElementsByTagName("script")[0];
+	    s.parentNode.insertBefore(bp, s);
+	})();
+  </script>
+
+
+
+  
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  
+
+</head>
+</html>
+<body>
+
+
+  
+    <span id="toolbox-mobile" class="toolbox-mobile">盒子</span>
+  
+
+  <div class="post-header CENTER">
+   
+  <div class="toolbox">
+    <a class="toolbox-entry" href="/">
+      <span class="toolbox-entry-text">盒子</span>
+      <i class="icon-angle-down"></i>
+      <i class="icon-home"></i>
+    </a>
+    <ul class="list-toolbox">
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/archives/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            博客
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/category/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            分类
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/tag/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            标签
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/link/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            友链
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/about/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            关于
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/atom.xml"
+            rel="noopener noreferrer"
+            target="_blank"
+            >
+            RSS
+          </a>
+        </li>
+      
+        <li class="item-toolbox">
+          <a
+            class="CIRCLE"
+            href="/search/"
+            rel="noopener noreferrer"
+            target="_self"
+            >
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  </div>
+
+
+</div>
+
+
+  <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#微任务"><span class="toc-text">微任务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试2-2-7"><span class="toc-text">测试2.2.7</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#测试2-2-7-1"><span class="toc-text">测试2.2.7.1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-Promise解决程序-Resolve-promise2-x"><span class="toc-text">2.3 Promise解决程序  [[Resolve]](promise2, x)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#代码"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#小结"><span class="toc-text">小结</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#代码重构"><span class="toc-text">代码重构</span></a></li></ol>
+  </div>
+
+
+
+<div class="content content-post CENTER">
+   <article id="post-手写Promise（下）" class="article article-type-post" itemprop="blogPost">
+  <header class="article-header">
+    <h1 class="post-title">手写Promise（下）</h1>
+
+    <div class="article-meta">
+      <span>
+        <i class="icon-calendar"></i>
+        <span>2020.06.11</span>
+      </span>
+
+      
+        <span class="article-author">
+          <i class="icon-user"></i>
+          <span>钟文钦</span>
+        </span>
+      
+
+      
+
+
+      
+        <span>
+          <i class="icon-comment"></i>
+          <a href="http://www.forsigner.com/2020/06/11/手写Promise（下）/#disqus_thread"></a>
+        </span>
+      
+
+      
+      <i class="fa fa-eye"></i> 
+        <span id="busuanzi_container_page_pv">
+           &nbsp热度 <span id="busuanzi_value_page_pv">
+           <i class="fa fa-spinner fa-spin"></i></span>℃
+        </span>
+      
+      
+    </div>
+  </header>
+
+  <div class="article-content">
+    
+      <p>之前手写Promise完成了大部分功能，剩余的因为比较繁琐，所以放到了这一部分详细讲解。<br></p>
+<p><a name="0tkbd"></a></p>
+<h2 id="微任务"><a href="#微任务" class="headerlink" title="微任务"></a>微任务</h2><p>之前一直使用setTimeout去模拟微任务操作，因为兼容性好；但是原生Promise其实是微任务，优先级会比宏任务定时器要高，所以后面会使用微任务去实现。<br><br><br><code>process.nextTick(()=&gt;{})</code><br><br><br>本来想用setImmediate代替setTimeout的，后来发现依旧有时间差的问题，如果与 <code>setTimeout(fn, 0)</code> 做比较，不一定优先执行，所以选择更快的 <strong>nextTick。</strong><br><strong><a href="https://nodejs.org/zh-cn/docs/guides/event-loop-timers-and-nexttick/" target="_blank" rel="noopener">Node 事件循环解析链接</a></strong><br><strong><br>`</strong>new **``MutationObserver(fn)`<br><br><br>这个是符合浏览器环境可以执行的微任务，大概意思是在监听某个dom变化后执行函数。<br></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">nextTick</span>(<span class="params">fn</span>) </span>&#123;</span><br><span class="line">  	<span class="comment">// node 环境</span></span><br><span class="line">    <span class="keyword">if</span> (process !== <span class="literal">undefined</span> &amp;&amp; <span class="keyword">typeof</span> process.nextTick === <span class="string">"function"</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> process.nextTick(fn);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// 浏览器环境</span></span><br><span class="line">        <span class="keyword">var</span> counter = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">var</span> observer = <span class="keyword">new</span> MutationObserver(fn);</span><br><span class="line">        <span class="keyword">var</span> textNode = <span class="built_in">document</span>.createTextNode(<span class="built_in">String</span>(counter));</span><br><span class="line"></span><br><span class="line">        observer.observe(textNode, &#123;</span><br><span class="line">            characterData: <span class="literal">true</span></span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        counter = counter + <span class="number">1</span>;</span><br><span class="line">        textNode.data = <span class="built_in">String</span>(counter);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a name="eky3d"></a></p>
+<h2 id="测试2-2-7"><a href="#测试2-2-7" class="headerlink" title="测试2.2.7"></a>测试2.2.7</h2><p>then必须返回一个Promise<br></p>
+<p><a name="2rRi5"></a></p>
+<h4 id="测试2-2-7-1"><a href="#测试2-2-7-1" class="headerlink" title="测试2.2.7.1"></a>测试2.2.7.1</h4><ul>
+<li>2.2.7.1 如果onFulfilled或onRejected返回一个值x, 运行 [[Resolve]](promise2, x) </li>
+<li>2.2.7.2 如果onFulfilled或onRejected抛出一个异常e，promise2必须被拒绝（rejected）并把e当作原因</li>
+</ul>
+<p><br><strong>（这里会关联到 2.3 Promise解决程序）</strong></p>
+<p><a name="aHJwI"></a></p>
+<h4 id="2-3-Promise解决程序-Resolve-promise2-x"><a href="#2-3-Promise解决程序-Resolve-promise2-x" class="headerlink" title="2.3 Promise解决程序  [[Resolve]](promise2, x)"></a>2.3 Promise解决程序  [[Resolve]](promise2, x)</h4><ul>
+<li>2.3.1 如果promise和x引用同一个对象，则用TypeError作为原因拒绝（reject）promise</li>
+</ul>
+<ul>
+<li>2.3.2 如果x是一个promise, 采用promise的状态</li>
+<li>2.3.3 如果x是一个对象或方法的若干规定</li>
+<li>2.3.4 如果x既不是对象也不是函数，用x完成(fulfilled)promise</li>
+</ul>
+<br>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> chai <span class="keyword">from</span> <span class="string">'chai'</span>;</span><br><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> sinon <span class="keyword">from</span> <span class="string">'sinon'</span>;</span><br><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> sinonChai <span class="keyword">from</span> <span class="string">'sinon-chai'</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="built_in">Promise</span> <span class="keyword">from</span> <span class="string">'../src/promise'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> assert = chai.assert;</span><br><span class="line"></span><br><span class="line">describe(<span class="string">'then方法 2.2.7'</span>, () =&gt; &#123;</span><br><span class="line">    it(<span class="string">'2.2.7 then必须返回一个promise'</span>,</span><br><span class="line">        (done) =&gt; &#123;</span><br><span class="line">            <span class="keyword">const</span> promise1 = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">                resolve();</span><br><span class="line">            &#125;)</span><br><span class="line">            <span class="keyword">const</span> promise2 = promise1.then();</span><br><span class="line">            setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">                assert(promise2 <span class="keyword">instanceof</span> <span class="built_in">Promise</span>)</span><br><span class="line">                done()</span><br><span class="line">            &#125;, <span class="number">0</span>)</span><br><span class="line">        &#125;)</span><br><span class="line">    it(<span class="string">'2.2.7.1 如果onFulfilled或onRejected返回一个值x，运行 [[Resolve]](promise2, x)'</span>,</span><br><span class="line">        (done) =&gt; &#123;</span><br><span class="line">            <span class="keyword">const</span> promise1 = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">                resolve();</span><br><span class="line">            &#125;)</span><br><span class="line">            <span class="keyword">const</span> promise2 = promise1.then(<span class="function"><span class="params">()</span> =&gt;</span> <span class="string">'成功'</span>);</span><br><span class="line">            promise2.then(<span class="function">(<span class="params">result</span>) =&gt;</span> &#123;</span><br><span class="line">                assert(result === <span class="string">'成功'</span>);</span><br><span class="line">                done();</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;)</span><br><span class="line">   it(<span class="string">'2.2.7.1 如果onFulfilled或onRejected返回一个值x，运行 [[Resolve]](promise2, x)'</span>,</span><br><span class="line">        (done) =&gt; &#123;</span><br><span class="line">            <span class="keyword">const</span> promise1 = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">                resolve();</span><br><span class="line">            &#125;)</span><br><span class="line">            <span class="keyword">const</span> promise2 = promise1.then(<span class="function"><span class="params">()</span> =&gt;</span> <span class="string">'成功'</span>);</span><br><span class="line">            promise2.then(<span class="function">(<span class="params">result</span>) =&gt;</span> &#123;</span><br><span class="line">                assert(result === <span class="string">'成功'</span>);</span><br><span class="line">                done();</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;)</span><br><span class="line">    it(<span class="string">'2.2.7.1 onFulfilled的返回值x是一个Promise的实例'</span>,</span><br><span class="line">        (done) =&gt; &#123;</span><br><span class="line">            <span class="keyword">const</span> fn = sinon.fake()</span><br><span class="line">            <span class="keyword">const</span> promise1 = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">                resolve();</span><br><span class="line">            &#125;)</span><br><span class="line">            <span class="keyword">const</span> promise2 = promise1.then(<span class="function"><span class="params">()</span> =&gt;</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve</span>) =&gt;</span> &#123; resolve() &#125;)); <span class="comment">// 返回一个promise实例</span></span><br><span class="line">            promise2.then(fn)</span><br><span class="line">            setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">                assert(fn.called)</span><br><span class="line">                done()</span><br><span class="line">            &#125;, <span class="number">0</span>)</span><br><span class="line">        &#125;)</span><br><span class="line">    it(<span class="string">'2.2.7.1 onFulfilled的返回值x是一个Promise的实例，且失败'</span>,</span><br><span class="line">        (done) =&gt; &#123;</span><br><span class="line">            <span class="keyword">const</span> fn = sinon.fake()</span><br><span class="line">            <span class="keyword">const</span> promise1 = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">                resolve();</span><br><span class="line">            &#125;)</span><br><span class="line">            <span class="keyword">const</span> promise2 = promise1.then(<span class="function"><span class="params">()</span> =&gt;</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params"><span class="literal">undefined</span>, reject</span>) =&gt;</span> &#123; reject() &#125;)); <span class="comment">// 返回一个promise实例</span></span><br><span class="line">            promise2.then(<span class="literal">null</span>, fn)</span><br><span class="line">            setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">                assert(fn.called)</span><br><span class="line">                done()</span><br><span class="line">            &#125;, <span class="number">0</span>)</span><br><span class="line">        &#125;)</span><br><span class="line">    it(<span class="string">'2.2.7.1 onRejected返回的x是一个Promise的实例'</span>,</span><br><span class="line">        (done) =&gt; &#123;</span><br><span class="line">            <span class="keyword">const</span> fn = sinon.fake()</span><br><span class="line">            <span class="keyword">const</span> promise1 = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">                reject();</span><br><span class="line">            &#125;)</span><br><span class="line">            <span class="keyword">const</span> promise2 = promise1.then(</span><br><span class="line">                <span class="literal">null</span>, </span><br><span class="line">                () =&gt; <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> resolve())); <span class="comment">// 返回一个promise实例</span></span><br><span class="line">            promise2.then(fn)</span><br><span class="line">            setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">                assert(fn.called)</span><br><span class="line">                done()</span><br><span class="line">            &#125;, <span class="number">0</span>)</span><br><span class="line">        &#125;)</span><br><span class="line">    it(<span class="string">'2.2.7.1 onRejected返回的x是一个Promise的实例, 且失败'</span>,</span><br><span class="line">        (done) =&gt; &#123;</span><br><span class="line">            <span class="keyword">const</span> fn = sinon.fake()</span><br><span class="line">            <span class="keyword">const</span> promise1 = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">                reject();</span><br><span class="line">            &#125;)</span><br><span class="line">            <span class="keyword">const</span> promise2 = promise1.then(</span><br><span class="line">                <span class="literal">null</span>, </span><br><span class="line">                () =&gt; <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> reject())); <span class="comment">// 返回一个promise实例</span></span><br><span class="line">            promise2.then(<span class="literal">null</span>, fn)</span><br><span class="line">            setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">                assert(fn.called)</span><br><span class="line">                done()</span><br><span class="line">            &#125;, <span class="number">0</span>)</span><br><span class="line">        &#125;)</span><br><span class="line">   it(<span class="string">'2.2.7.2 如果onFulfilled抛出异常, promise2 必须被拒绝（rejected）并把e当作原因'</span>,</span><br><span class="line">        (done) =&gt; &#123;</span><br><span class="line">            <span class="keyword">const</span> fn = sinon.fake()</span><br><span class="line">            <span class="keyword">const</span> error = <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'抛出异常'</span>)</span><br><span class="line">            <span class="keyword">const</span> promise1 = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">                resolve();</span><br><span class="line">            &#125;)</span><br><span class="line">            <span class="keyword">const</span> promise2 = promise1.then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">throw</span> error</span><br><span class="line">            &#125;)</span><br><span class="line">            promise2.then(<span class="literal">null</span>, fn)</span><br><span class="line">            setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">                assert(fn.called)</span><br><span class="line">                assert(fn.calledWith(error))</span><br><span class="line">                done()</span><br><span class="line">            &#125;, <span class="number">0</span>)</span><br><span class="line">        &#125;)</span><br><span class="line">    it(<span class="string">'2.2.7.2 如果onRejected抛出异常, promise2 必须被拒绝（rejected）并把e当作原因'</span>,</span><br><span class="line">        (done) =&gt; &#123;</span><br><span class="line">            <span class="keyword">const</span> fn = sinon.fake()</span><br><span class="line">            <span class="keyword">const</span> error = <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'抛出异常'</span>)</span><br><span class="line">            <span class="keyword">const</span> promise1 = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">                reject();</span><br><span class="line">            &#125;)</span><br><span class="line">            <span class="keyword">const</span> promise2 = promise1.then(<span class="literal">null</span>, () =&gt; &#123;</span><br><span class="line">                <span class="keyword">throw</span> error</span><br><span class="line">            &#125;)</span><br><span class="line">            promise2.then(<span class="literal">null</span>, fn)</span><br><span class="line">            setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">                assert(fn.called)</span><br><span class="line">                assert(fn.calledWith(error))</span><br><span class="line">                done()</span><br><span class="line">            &#125;, <span class="number">0</span>)</span><br><span class="line">        &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><a name="EzVXg"></a></p>
+<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Promise</span> </span>&#123;</span><br><span class="line">    resolve(result) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.state === <span class="string">'fulfilled'</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">this</span>.state = <span class="string">'fulfilled'</span>;</span><br><span class="line">        nextTick(<span class="function"><span class="params">()</span> =&gt;</span> &#123; <span class="comment">// 微任务 node环境</span></span><br><span class="line">            <span class="keyword">this</span>.callbacks.forEach(<span class="function"><span class="params">handle</span> =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (<span class="keyword">typeof</span> handle[<span class="number">0</span>] === <span class="string">'function'</span>) &#123; <span class="comment">// 判断必须放到定时器里面，否则会提前判断，拿到是null的值</span></span><br><span class="line">                    <span class="keyword">let</span> x</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        x = handle[<span class="number">0</span>].call(<span class="literal">undefined</span>, result);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">                        <span class="keyword">return</span> handle[<span class="number">2</span>].reject(e) <span class="comment">// 2.2.7.2 如果抛出异常</span></span><br><span class="line">                    &#125;</span><br><span class="line">                    handle[<span class="number">2</span>].resolveWith(x);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    reject(reason) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.state === <span class="string">'rejected'</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">this</span>.state = <span class="string">'rejected'</span>;</span><br><span class="line">        nextTick(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="keyword">this</span>.callbacks.forEach(<span class="function"><span class="params">handle</span> =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (<span class="keyword">typeof</span> handle[<span class="number">1</span>] === <span class="string">'function'</span>) &#123;</span><br><span class="line">                    <span class="keyword">let</span> x;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        x = handle[<span class="number">1</span>].call(<span class="literal">undefined</span>, reason);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">                        handle[<span class="number">2</span>].reject(e)</span><br><span class="line">                    &#125;</span><br><span class="line">                    handle[<span class="number">2</span>].resolveWith(x)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    callbacks = []</span><br><span class="line">    state = <span class="string">'pending'</span> <span class="comment">// 'pending'|'fulfilled'|'rejected'三种状态，初始为'pending'</span></span><br><span class="line">    <span class="keyword">constructor</span>(fn) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">typeof</span> fn !== <span class="string">'function'</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'必须接受一个函数'</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        fn(<span class="keyword">this</span>.resolve.bind(<span class="keyword">this</span>), <span class="keyword">this</span>.reject.bind(<span class="keyword">this</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    then(success?, fail?) &#123;</span><br><span class="line">        <span class="keyword">const</span> handle = []</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">typeof</span> success === <span class="string">'function'</span>) &#123;</span><br><span class="line">            handle[<span class="number">0</span>] = success</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">typeof</span> fail === <span class="string">'function'</span>) &#123;</span><br><span class="line">            handle[<span class="number">1</span>] = fail</span><br><span class="line">        &#125;</span><br><span class="line">        handle[<span class="number">2</span>] = <span class="keyword">new</span> _Promise(<span class="function"><span class="params">()</span> =&gt;</span> &#123; &#125;)</span><br><span class="line">        <span class="keyword">this</span>.callbacks.push(handle)</span><br><span class="line">        <span class="keyword">return</span> handle[<span class="number">2</span>]</span><br><span class="line">    &#125;</span><br><span class="line">    resolveWith(x) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span> === x) &#123; <span class="comment">// 2.3.1</span></span><br><span class="line">            <span class="keyword">this</span>.reject(<span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">'不能是同一个引用对象'</span>))</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (x <span class="keyword">instanceof</span> _Promise) &#123; <span class="comment">// 2.3.2</span></span><br><span class="line">            x.then(<span class="function">(<span class="params">result</span>) =&gt;</span> &#123; <span class="comment">// 2.3.3.3</span></span><br><span class="line">                <span class="keyword">this</span>.resolve(result) <span class="comment">// 2.3.3.3.1 </span></span><br><span class="line">            &#125;, (reason) =&gt; &#123;</span><br><span class="line">                <span class="keyword">this</span>.reject(reason)  <span class="comment">// 2.3.3.3.2 </span></span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (x <span class="keyword">instanceof</span> <span class="built_in">Object</span>) &#123; <span class="comment">// 2.3.3</span></span><br><span class="line">            <span class="keyword">let</span> then</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                then = x.then <span class="comment">// 2.3.3.1 让x作为x.then</span></span><br><span class="line">            &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">                <span class="keyword">this</span>.reject(e) <span class="comment">// 2.3.3.2</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">typeof</span> then === <span class="string">'function'</span>) &#123; <span class="comment">// 2.3.3.3, 如果为函数则调用then</span></span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    x.then( <span class="comment">// </span></span><br><span class="line">                        (y) =&gt; &#123;</span><br><span class="line">                            <span class="keyword">this</span>.resolveWith(y) <span class="comment">// 2.3.3.3.1</span></span><br><span class="line">                        &#125;, (r) =&gt; &#123;</span><br><span class="line">                            <span class="keyword">this</span>.resolveWith(r) <span class="comment">// 2.3.3.3.2</span></span><br><span class="line">                        &#125;)</span><br><span class="line">                &#125; <span class="keyword">catch</span> (e) &#123; <span class="comment">// 2.3.3.3.4 </span></span><br><span class="line">                    <span class="keyword">this</span>.reject(e)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123; <span class="comment">// 2.3.3.4 如果不是函数，resolve</span></span><br><span class="line">                <span class="keyword">this</span>.resolve(x)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123; <span class="comment">// 2.3.4 如果不是对象，直接resolve</span></span><br><span class="line">            <span class="comment">// 不考虑无限递归的情况</span></span><br><span class="line">            <span class="keyword">this</span>.resolve(x)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">_Promise</span> </span>&#123;</span><br><span class="line">    resolve(result) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.state === <span class="string">'fulfilled'</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">this</span>.state = <span class="string">'fulfilled'</span>;</span><br><span class="line">        nextTick(<span class="function"><span class="params">()</span> =&gt;</span> &#123; <span class="comment">// 微任务 node环境</span></span><br><span class="line">            <span class="keyword">this</span>.callbacks.forEach(<span class="function"><span class="params">handle</span> =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (<span class="keyword">typeof</span> handle[<span class="number">0</span>] === <span class="string">'function'</span>) &#123; <span class="comment">// 判断必须放到定时器里面，否则会提前判断，拿到是null的值</span></span><br><span class="line">                    <span class="keyword">let</span> x</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        x = handle[<span class="number">0</span>].call(<span class="literal">undefined</span>, result);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">                        <span class="keyword">return</span> handle[<span class="number">2</span>].reject(e) <span class="comment">// 2.2.7.2 如果抛出异常</span></span><br><span class="line">                    &#125;</span><br><span class="line">                    handle[<span class="number">2</span>].resolveWith(x);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    reject(reason) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.state === <span class="string">'rejected'</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">this</span>.state = <span class="string">'rejected'</span>;</span><br><span class="line">        nextTick(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="keyword">this</span>.callbacks.forEach(<span class="function"><span class="params">handle</span> =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (<span class="keyword">typeof</span> handle[<span class="number">1</span>] === <span class="string">'function'</span>) &#123;</span><br><span class="line">                    <span class="keyword">let</span> x;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        x = handle[<span class="number">1</span>].call(<span class="literal">undefined</span>, reason);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">                        handle[<span class="number">2</span>].reject(e)</span><br><span class="line">                    &#125;</span><br><span class="line">                    handle[<span class="number">2</span>].resolveWith(x)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    callbacks = []</span><br><span class="line">    state = <span class="string">'pending'</span> <span class="comment">// 'pending'|'fulfilled'|'rejected'三种状态，初始为'pending'</span></span><br><span class="line">    <span class="keyword">constructor</span>(fn) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">typeof</span> fn !== <span class="string">'function'</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'必须接受一个函数'</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        fn(<span class="keyword">this</span>.resolve.bind(<span class="keyword">this</span>), <span class="keyword">this</span>.reject.bind(<span class="keyword">this</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    then(success?, fail?) &#123;</span><br><span class="line">        <span class="keyword">const</span> handle = []</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">typeof</span> success === <span class="string">'function'</span>) &#123;</span><br><span class="line">            handle[<span class="number">0</span>] = success</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">typeof</span> fail === <span class="string">'function'</span>) &#123;</span><br><span class="line">            handle[<span class="number">1</span>] = fail</span><br><span class="line">        &#125;</span><br><span class="line">        handle[<span class="number">2</span>] = <span class="keyword">new</span> _Promise(<span class="function"><span class="params">()</span> =&gt;</span> &#123; &#125;)</span><br><span class="line">        <span class="keyword">this</span>.callbacks.push(handle)</span><br><span class="line">        <span class="keyword">return</span> handle[<span class="number">2</span>]</span><br><span class="line">    &#125;</span><br><span class="line">    resolveWith(x) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span> === x) &#123; <span class="comment">// 2.3.1</span></span><br><span class="line">            <span class="keyword">this</span>.reject(<span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">'不能是同一个引用对象'</span>))</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (x <span class="keyword">instanceof</span> _Promise) &#123; <span class="comment">// 2.3.2</span></span><br><span class="line">            x.then(<span class="function">(<span class="params">result</span>) =&gt;</span> &#123; <span class="comment">// 2.3.3.3</span></span><br><span class="line">                <span class="keyword">this</span>.resolve(result) <span class="comment">// 2.3.3.3.1 </span></span><br><span class="line">            &#125;, (reason) =&gt; &#123;</span><br><span class="line">                <span class="keyword">this</span>.reject(reason)  <span class="comment">// 2.3.3.3.2 </span></span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (x <span class="keyword">instanceof</span> <span class="built_in">Object</span>) &#123; <span class="comment">// 2.3.3</span></span><br><span class="line">            <span class="keyword">let</span> then</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                then = x.then <span class="comment">// 2.3.3.1 让x作为x.then</span></span><br><span class="line">            &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">                <span class="keyword">this</span>.reject(e) <span class="comment">// 2.3.3.2</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">typeof</span> then === <span class="string">'function'</span>) &#123; <span class="comment">// 2.3.3.3, 如果为函数则调用then</span></span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    x.then( <span class="comment">// </span></span><br><span class="line">                        (y) =&gt; &#123;</span><br><span class="line">                            <span class="keyword">this</span>.resolveWith(y) <span class="comment">// 2.3.3.3.1</span></span><br><span class="line">                        &#125;, (r) =&gt; &#123;</span><br><span class="line">                            <span class="keyword">this</span>.resolveWith(r) <span class="comment">// 2.3.3.3.2</span></span><br><span class="line">                        &#125;)</span><br><span class="line">                &#125; <span class="keyword">catch</span> (e) &#123; <span class="comment">// 2.3.3.3.4 </span></span><br><span class="line">                    <span class="keyword">this</span>.reject(e)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123; <span class="comment">// 2.3.3.4 如果不是函数，resolve</span></span><br><span class="line">                <span class="keyword">this</span>.resolve(x)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123; <span class="comment">// 2.3.4 如果不是对象，直接resolve</span></span><br><span class="line">            <span class="comment">// 不考虑无限递归的情况</span></span><br><span class="line">            <span class="keyword">this</span>.resolve(x)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">nextTick</span>(<span class="params">fn</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (process !== <span class="literal">undefined</span> &amp;&amp; <span class="keyword">typeof</span> process.nextTick === <span class="string">"function"</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> process.nextTick(fn);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">var</span> counter = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">var</span> observer = <span class="keyword">new</span> MutationObserver(fn);</span><br><span class="line">        <span class="keyword">var</span> textNode = <span class="built_in">document</span>.createTextNode(<span class="built_in">String</span>(counter));</span><br><span class="line"></span><br><span class="line">        observer.observe(textNode, &#123;</span><br><span class="line">            characterData: <span class="literal">true</span></span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        counter = counter + <span class="number">1</span>;</span><br><span class="line">        textNode.data = <span class="built_in">String</span>(counter);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="built_in">Promise</span>;</span><br></pre></td></tr></table></figure>
+
+<p><a name="jYjlX"></a></p>
+<h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><p>这样就基本完成Promise的功能，下面做一些优化的工作。<br></p>
+<p><a name="H4qfL"></a></p>
+<h2 id="代码重构"><a href="#代码重构" class="headerlink" title="代码重构"></a>代码重构</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Promise</span> </span>&#123;</span><br><span class="line">    callbacks = []</span><br><span class="line">    state = <span class="string">'pending'</span> <span class="comment">// 'pending'|'fulfilled'|'rejected'三种状态，初始为'pending'</span></span><br><span class="line">    private resolveOrReject(data, state, i) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.state !== <span class="string">'pending'</span>) <span class="keyword">return</span>;</span><br><span class="line">        <span class="keyword">this</span>.state = state;</span><br><span class="line">        nextTick(<span class="function"><span class="params">()</span> =&gt;</span> &#123; <span class="comment">// 微任务 node环境</span></span><br><span class="line">            <span class="keyword">this</span>.callbacks.forEach(<span class="function"><span class="params">handle</span> =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (<span class="keyword">typeof</span> handle[i] === <span class="string">'function'</span>) &#123; <span class="comment">// 判断必须放到定时器里面，否则会提前判断，拿到是null的值</span></span><br><span class="line">                    <span class="keyword">let</span> x</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        x = handle[i].call(<span class="literal">undefined</span>, data);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">                        <span class="keyword">return</span> handle[<span class="number">2</span>].reject(e) <span class="comment">// 2.2.7.2 如果抛出异常</span></span><br><span class="line">                    &#125;</span><br><span class="line">                    handle[<span class="number">2</span>].resolveWith(x);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    resolve(result) &#123;</span><br><span class="line">        <span class="keyword">this</span>.resolveOrReject(result, <span class="string">'fulfilled'</span>, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    reject(reason) &#123;</span><br><span class="line">        <span class="keyword">this</span>.resolveOrReject(reason, <span class="string">'rejected'</span>, <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">constructor</span>(fn) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">typeof</span> fn !== <span class="string">'function'</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'必须接受一个函数'</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        fn(<span class="keyword">this</span>.resolve.bind(<span class="keyword">this</span>), <span class="keyword">this</span>.reject.bind(<span class="keyword">this</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    then(success?, fail?) &#123;</span><br><span class="line">        <span class="keyword">const</span> handle = []</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">typeof</span> success === <span class="string">'function'</span>) &#123;</span><br><span class="line">            handle[<span class="number">0</span>] = success</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">typeof</span> fail === <span class="string">'function'</span>) &#123;</span><br><span class="line">            handle[<span class="number">1</span>] = fail</span><br><span class="line">        &#125;</span><br><span class="line">        handle[<span class="number">2</span>] = <span class="keyword">new</span> _Promise(<span class="function"><span class="params">()</span> =&gt;</span> &#123; &#125;)</span><br><span class="line">        <span class="keyword">this</span>.callbacks.push(handle)</span><br><span class="line">        <span class="keyword">return</span> handle[<span class="number">2</span>]</span><br><span class="line">    &#125;</span><br><span class="line">    resolveWith(x) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span> === x) &#123; <span class="comment">// 2.3.1</span></span><br><span class="line">            <span class="keyword">this</span>.resolveWithSelf()</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (x <span class="keyword">instanceof</span> _Promise) &#123; <span class="comment">// 2.3.2</span></span><br><span class="line">            <span class="keyword">this</span>.resolveWithPromise(x)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (x <span class="keyword">instanceof</span> <span class="built_in">Object</span>) &#123; <span class="comment">// 2.3.3</span></span><br><span class="line">            <span class="keyword">this</span>.resolveWithObject(x)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123; <span class="comment">// 2.3.4 如果不是对象，直接resolve</span></span><br><span class="line">            <span class="comment">// 不考虑无限递归的情况</span></span><br><span class="line">            <span class="keyword">this</span>.resolve(x)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    private resolveWithSelf() &#123;</span><br><span class="line">        <span class="keyword">this</span>.reject(<span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">'不能是同一个引用对象'</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    private resolveWithPromise(x) &#123;</span><br><span class="line">        x.then(</span><br><span class="line">            result =&gt; &#123;</span><br><span class="line">                <span class="keyword">this</span>.resolve(result);</span><br><span class="line">            &#125;,</span><br><span class="line">            reason =&gt; &#123;</span><br><span class="line">                <span class="keyword">this</span>.reject(reason);</span><br><span class="line">            &#125;</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">    private getThen(x) &#123;</span><br><span class="line">        <span class="keyword">let</span> then;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            then = x.then;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>.reject(e);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> then;</span><br><span class="line">    &#125;</span><br><span class="line">    private resolveWithThenable(x) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            x.then(</span><br><span class="line">                y =&gt; &#123;</span><br><span class="line">                    <span class="keyword">this</span>.resolveWith(y);</span><br><span class="line">                &#125;,</span><br><span class="line">                r =&gt; &#123;</span><br><span class="line">                    <span class="keyword">this</span>.reject(r);</span><br><span class="line">                &#125;</span><br><span class="line">            );</span><br><span class="line">        &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">            <span class="keyword">this</span>.reject(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    private resolveWithObject(x) &#123;</span><br><span class="line">        <span class="keyword">let</span> then = <span class="keyword">this</span>.getThen(x);</span><br><span class="line">        <span class="keyword">if</span> (then <span class="keyword">instanceof</span> <span class="built_in">Function</span>) &#123;</span><br><span class="line">            <span class="keyword">this</span>.resolveWithThenable(x);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">this</span>.resolve(x);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">nextTick</span>(<span class="params">fn</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (process !== <span class="literal">undefined</span> &amp;&amp; <span class="keyword">typeof</span> process.nextTick === <span class="string">"function"</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> process.nextTick(fn);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">var</span> counter = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">var</span> observer = <span class="keyword">new</span> MutationObserver(fn);</span><br><span class="line">        <span class="keyword">var</span> textNode = <span class="built_in">document</span>.createTextNode(<span class="built_in">String</span>(counter));</span><br><span class="line"></span><br><span class="line">        observer.observe(textNode, &#123;</span><br><span class="line">            characterData: <span class="literal">true</span></span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        counter = counter + <span class="number">1</span>;</span><br><span class="line">        textNode.data = <span class="built_in">String</span>(counter);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="built_in">Promise</span>;</span><br></pre></td></tr></table></figure>
+
+<br>
+<a name="jY3tY"></a>
+## 总结
+手写一遍Promise，确实加深了对Promise的理解，还有就是测试驱动开发是真的舒服，只要写好了测试用例，代码怎么修改也不用担心出错，这也是我未来要进行的一个方向。
+
+    
+  </div>
+
+</article>
+
+
+   
+
+   
+  <div class="box-prev-next clearfix">
+    <a class="show pull-left" href="/2020/06/09/手写Promise（上）/">
+        <i class="icon icon-angle-left"></i>
+    </a>
+    <a class="hide pull-right" href="/">
+        <i class="icon icon-angle-right"></i>
+    </a>
+  </div>
+
+
+
+
+</div>
+
+
+  <a id="backTop" class="back-top">
+    <i class="icon-angle-up"></i>
+  </a>
+
+
+
+
+  <div class="modal" id="modal">
+  <span id="cover" class="cover hide"></span>
+  <div id="modal-dialog" class="modal-dialog hide-dialog">
+    <div class="modal-header">
+      <span id="close" class="btn-close">关闭</span>
+    </div>
+    <hr>
+    <div class="modal-body">
+      <ul class="list-toolbox">
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/archives/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              博客
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/category/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              分类
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/tag/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              标签
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/link/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              友链
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/about/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              关于
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/atom.xml"
+              rel="noopener noreferrer"
+              target="_blank"
+              >
+              RSS
+            </a>
+          </li>
+        
+          <li class="item-toolbox">
+            <a
+              class="CIRCLE"
+              href="/search/"
+              rel="noopener noreferrer"
+              target="_self"
+              >
+              搜索
+            </a>
+          </li>
+        
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+
+
+  
+      <div class="fexo-comments comments-post">
+    
+  <section class="disqus-comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+  </section>
+
+  <script>
+    var disqus_shortname = 'forsigner';
+    
+    var disqus_url = 'http://yoursite.com/2020/06/11/手写Promise（下）/';
+    
+    (function(){
+      var dsq = document.createElement('script');
+      dsq.type = 'text/javascript';
+      dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+
+  <script id="dsq-count-scr" src="//forsigner.disqus.com/count.js" async></script>
+
+
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    
+
+<!-- Gitalk评论插件通用代码 -->
+<div id="gitalk-container"></div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+const gitalk = new Gitalk({
+  clientID: '277317290454635afa73',
+  clientSecret: '78223c859304da5e8d71bfce136d436c6ff95c37',
+  repo: 'blog-comment',
+  owner: 'forsigner',
+  // 在这里设置一下截取前50个字符串, 这是因为 github 对 label 的长度有了要求, 如果超过
+  // 50个字符串则会报错.
+  // id: location.pathname.split('/').pop().substring(0, 49),
+  id: location.pathname,
+  admin: ['forsigner'],
+  // facebook-like distraction free mode
+  distractionFreeMode: false
+})
+gitalk.render('gitalk-container')
+</script>
+<!-- Gitalk代码结束 -->
+
+
+
+  </div>
+
+  
+
+  <script type="text/javascript">
+  function loadScript(url, callback) {
+    var script = document.createElement('script')
+    script.type = 'text/javascript';
+
+    if (script.readyState) { //IE
+      script.onreadystatechange = function() {
+        if (script.readyState == 'loaded' ||
+          script.readyState == 'complete') {
+          script.onreadystatechange = null;
+          callback();
+        }
+      };
+    } else { //Others
+      script.onload = function() {
+        callback();
+      };
+    }
+
+    script.src = url;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+  window.onload = function() {
+    loadScript('/js/bundle.js?235683', function() {
+      // load success
+    });
+  }
+</script>
+
+</body>
+</html>
